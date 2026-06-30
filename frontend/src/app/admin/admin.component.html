@@ -1,0 +1,160 @@
+<nav class="navbar">
+  <div class="container navbar-content">
+    <div class="brand">🧡 Shopee Clone Admin Portal</div>
+    <div class="user-info">
+      <span>Logged in as: <strong>{{ adminEmail }}</strong></span>
+      <button (click)="logout()" class="btn btn-secondary">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="grid grid-3" style="margin-bottom: 30px;">
+    <button [class.btn-primary]="activeTab === 'stores'" [class.btn-secondary]="activeTab !== 'stores'" (click)="activeTab = 'stores'" class="btn">Store Approvals & Stores</button>
+    <button [class.btn-primary]="activeTab === 'users'" [class.btn-secondary]="activeTab !== 'users'" (click)="activeTab = 'users'" class="btn">User Accounts</button>
+    <button [class.btn-primary]="activeTab === 'categories'" [class.btn-secondary]="activeTab !== 'categories'" (click)="activeTab = 'categories'" class="btn">Manage Categories</button>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="successMessage" class="card alert alert-success" style="padding: 12px; margin-bottom: 20px;">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="card alert alert-danger" style="padding: 12px; margin-bottom: 20px;">{{ errorMessage }}</div>
+
+  <!-- STORES TAB -->
+  <div *ngIf="activeTab === 'stores'">
+    <div class="card">
+      <h2>Pending Store Creations</h2>
+      <div *ngIf="pendingStores.length === 0" style="padding: 10px; color: #888;">No pending store creation applications.</div>
+      <table *ngIf="pendingStores.length > 0">
+        <thead>
+          <tr>
+            <th>Store Name</th>
+            <th>Description</th>
+            <th>Location Address</th>
+            <th>Coordinates</th>
+            <th>Owner Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let store of pendingStores">
+            <td><strong>{{ store.name }}</strong></td>
+            <td>{{ store.description }}</td>
+            <td>{{ store.location?.address || 'N/A' }}</td>
+            <td>lat: {{ store.location?.lat }}, lng: {{ store.location?.lng }}</td>
+            <td>{{ store.ownerId?.email }}</td>
+            <td>
+              <button (click)="approveStore(store._id)" class="btn btn-success" style="padding: 6px 12px; font-size: 13px; margin-right: 8px;">Approve</button>
+              <button (click)="rejectStore(store._id)" class="btn btn-danger" style="padding: 6px 12px; font-size: 13px;">Reject</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top: 30px;">
+      <h2>All Registered Stores</h2>
+      <div *ngIf="allStores.length === 0" style="padding: 10px; color: #888;">No stores registered.</div>
+      <table *ngIf="allStores.length > 0">
+        <thead>
+          <tr>
+            <th>Store Name</th>
+            <th>Location Address</th>
+            <th>Status</th>
+            <th>Activity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let store of allStores">
+            <td><strong>{{ store.name }}</strong></td>
+            <td>{{ store.location?.address || 'N/A' }}</td>
+            <td>
+              <span class="badge" [ngClass]="'badge-' + store.status">{{ store.status }}</span>
+            </td>
+            <td>
+              <span class="badge" [class.badge-approved]="!store.isDeactivated" [class.badge-rejected]="store.isDeactivated">
+                {{ store.isDeactivated ? 'Deactivated' : 'Active' }}
+              </span>
+            </td>
+            <td>
+              <button (click)="toggleStoreActive(store._id)" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">
+                {{ store.isDeactivated ? 'Activate' : 'Deactivate' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- USERS TAB -->
+  <div *ngIf="activeTab === 'users'" class="card">
+    <h2>User Accounts Management</h2>
+    <div *ngIf="users.length === 0" style="padding: 10px; color: #888;">No registered users found.</div>
+    <table *ngIf="users.length > 0">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of users">
+          <td>{{ u.profile?.name }}</td>
+          <td>{{ u.email }}</td>
+          <td><strong style="text-transform: uppercase;">{{ u.role }}</strong></td>
+          <td>
+            <span class="badge" [class.badge-approved]="u.status === 'active'" [class.badge-rejected]="u.status === 'deactivated'">
+              {{ u.status }}
+            </span>
+          </td>
+          <td>
+            <button (click)="toggleUserActive(u._id)" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">
+              {{ u.status === 'active' ? 'Deactivate' : 'Activate' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CATEGORIES TAB -->
+  <div *ngIf="activeTab === 'categories'" class="grid grid-2">
+    <div class="card">
+      <h2>Add New Category</h2>
+      <form (ngSubmit)="createCategory()">
+        <div class="form-group">
+          <label for="cat-name">Category Name</label>
+          <input type="text" id="cat-name" name="catName" class="form-control" placeholder="e.g. Electronics" [(ngModel)]="newCategory.name" required />
+        </div>
+        <div class="form-group">
+          <label for="cat-desc">Description</label>
+          <textarea id="cat-desc" name="catDesc" class="form-control" rows="3" placeholder="Category description..." [(ngModel)]="newCategory.description"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Category</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Existing Categories</h2>
+      <div *ngIf="categories.length === 0" style="padding: 10px; color: #888;">No categories available.</div>
+      <table *ngIf="categories.length > 0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cat of categories">
+            <td><strong>{{ cat.name }}</strong></td>
+            <td>{{ cat.description }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,202 @@
+<nav class="navbar">
+  <div class="container navbar-content">
+    <div class="brand">🧡 Shopee Clone Seller Centre</div>
+    <div class="user-info">
+      <span>Seller Account: <strong>{{ sellerEmail }}</strong></span>
+      <button (click)="logout()" class="btn btn-secondary">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- Alerts -->
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+  <!-- If seller has NO store yet -->
+  <div *ngIf="!myStore" class="card">
+    <h2>Apply for a Seller Store</h2>
+    <p style="margin-bottom: 20px; color: #555;">Create your store to start listing products on Shopee Clone. Your application will require Admin approval.</p>
+    
+    <form (ngSubmit)="applyForStore()">
+      <div class="form-group">
+        <label for="store-name">Store Name</label>
+        <input type="text" id="store-name" name="name" class="form-control" placeholder="e.g. Gadget Hub PH" [(ngModel)]="newStoreData.name" required />
+      </div>
+      <div class="form-group">
+        <label for="store-desc">Store Description</label>
+        <textarea id="store-desc" name="desc" class="form-control" rows="3" placeholder="Describe what you sell..." [(ngModel)]="newStoreData.description"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="store-addr">Store Address</label>
+        <input type="text" id="store-addr" name="addr" class="form-control" placeholder="e.g. Quezon City, Metro Manila" [(ngModel)]="newStoreData.location.address" required />
+      </div>
+
+      <div class="form-group">
+        <label>Pin Store Location (Coordinates: lat: {{ newStoreData.location.lat | number:'1.4-4' }}, lng: {{ newStoreData.location.lng | number:'1.4-4' }})</label>
+        <p style="font-size: 13px; color: #888; margin-bottom: 5px;">Drag the red marker or click on the map to pin your store location.</p>
+        <app-map [lat]="14.5995" [lng]="120.9842" (locationSelected)="onLocationSelected($event)"></app-map>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Submit Store Application</button>
+    </form>
+  </div>
+
+  <!-- If seller has a store -->
+  <div *ngIf="myStore">
+    <!-- Store Status Banner -->
+    <div class="card" style="border-left: 5px solid;" [style.border-color]="myStore.status === 'approved' ? '#26a99e' : (myStore.status === 'pending' ? '#ffc107' : '#ff424e')">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2>Store Name: {{ myStore.name }}</h2>
+          <p>{{ myStore.description }}</p>
+          <p style="font-size: 14px; margin-top: 5px; color: #666;">
+            📍 {{ myStore.location?.address }} (lat: {{ myStore.location?.lat }}, lng: {{ myStore.location?.lng }})
+          </p>
+        </div>
+        <div>
+          <span style="font-size: 14px; margin-right: 10px;">Approval Status:</span>
+          <span class="badge" [ngClass]="'badge-' + myStore.status">{{ myStore.status }}</span>
+          <div *ngIf="myStore.isDeactivated" class="badge badge-rejected" style="margin-left: 5px;">DEACTIVATED BY ADMIN</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active tabs (Only show products/orders tabs if store is approved and not deactivated) -->
+    <div *ngIf="myStore.status === 'approved' && !myStore.isDeactivated">
+      <div class="grid grid-2" style="margin-bottom: 30px;">
+        <button [class.btn-primary]="activeTab === 'products'" [class.btn-secondary]="activeTab !== 'products'" (click)="activeTab = 'products'" class="btn">Manage Products</button>
+        <button [class.btn-primary]="activeTab === 'orders'" [class.btn-secondary]="activeTab !== 'orders'" (click)="activeTab = 'orders'" class="btn">Store Orders</button>
+      </div>
+
+      <!-- PRODUCTS MANAGEMENT TAB -->
+      <div *ngIf="activeTab === 'products'" class="grid grid-3" style="grid-template-columns: 1fr 2fr; gap: 30px;">
+        <!-- Left: Product Create / Edit Form -->
+        <div class="card">
+          <h2>{{ editingProductId ? 'Edit Product' : 'Add New Product' }}</h2>
+          <form (ngSubmit)="saveProduct()">
+            <div class="form-group">
+              <label for="prod-name">Product Name</label>
+              <input type="text" id="prod-name" name="pName" class="form-control" placeholder="e.g. Wireless Mouse" [(ngModel)]="productForm.name" required />
+            </div>
+            <div class="form-group">
+              <label for="prod-desc">Description</label>
+              <textarea id="prod-desc" name="pDesc" class="form-control" rows="3" placeholder="Product details..." [(ngModel)]="productForm.description"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="prod-price">Price (PHP)</label>
+              <input type="number" id="prod-price" name="pPrice" class="form-control" placeholder="499" [(ngModel)]="productForm.price" required min="0" />
+            </div>
+            <div class="form-group">
+              <label for="prod-stock">Stock Quantity</label>
+              <input type="number" id="prod-stock" name="pStock" class="form-control" placeholder="50" [(ngModel)]="productForm.stock" required min="0" />
+            </div>
+            <div class="form-group">
+              <label for="prod-cat">Category</label>
+              <select id="prod-cat" name="pCat" class="form-control" [(ngModel)]="productForm.categoryId" required>
+                <option value="" disabled selected>Select Category</option>
+                <option *ngFor="let cat of categories" [value]="cat._id">{{ cat.name }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="prod-img">Product Image URL</label>
+              <input type="text" id="prod-img" name="pImg" class="form-control" placeholder="http://example.com/image.jpg" [(ngModel)]="productForm.imageUrl" />
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+              <button type="submit" class="btn btn-primary" style="flex: 1;">{{ editingProductId ? 'Update' : 'Add Product' }}</button>
+              <button type="button" *ngIf="editingProductId" (click)="cancelEdit()" class="btn btn-secondary">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Right: Products List -->
+        <div class="card">
+          <h2>My Products</h2>
+          <div *ngIf="products.length === 0" style="padding: 20px; text-align: center; color: #888;">No products listed yet. Add one on the left!</div>
+          <table *ngIf="products.length > 0">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let prod of products">
+                <td>
+                  <img [src]="prod.imageUrl || 'https://via.placeholder.com/60'" alt="prod image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                </td>
+                <td><strong>{{ prod.name }}</strong><br/><small style="color: #666;">{{ prod.description | slice:0:30 }}...</small></td>
+                <td>{{ prod.categoryId?.name }}</td>
+                <td>₱{{ prod.price }}</td>
+                <td>{{ prod.stock }}</td>
+                <td>
+                  <button (click)="editProduct(prod)" class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px; margin-right: 5px;">Edit</button>
+                  <button (click)="deleteProduct(prod._id)" class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ORDERS TAB -->
+      <div *ngIf="activeTab === 'orders'" class="card">
+        <h2>Customer Orders Fullfilment</h2>
+        <div *ngIf="orders.length === 0" style="padding: 20px; text-align: center; color: #888;">No orders received yet.</div>
+        <table *ngIf="orders.length > 0">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Shipping Address</th>
+              <th>Products Ordered</th>
+              <th>Total Amount</th>
+              <th>Fulfillment Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of orders">
+              <td><small>{{ order._id }}</small></td>
+              <td>{{ order.customerId?.email }}</td>
+              <td>{{ order.shippingAddress }}</td>
+              <td>
+                <div *ngFor="let item of order.items">
+                  - {{ item.productId?.name }} (Qty: {{ item.quantity }} x ₱{{ item.price }})
+                </div>
+              </td>
+              <td><strong>₱{{ order.totalAmount }}</strong></td>
+              <td>
+                <span class="badge" [class.badge-pending]="order.status === 'pending'" [class.badge-approved]="order.status === 'processing' || order.status === 'shipped'" [class.badge-rejected]="order.status === 'cancelled'">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td>
+                <select [ngModel]="order.status" (ngModelChange)="updateOrderStatus(order._id, $event)" class="form-control" style="padding: 4px 8px; font-size: 13px;">
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Banner shown if store is pending or deactivated -->
+    <div *ngIf="myStore.status !== 'approved' || myStore.isDeactivated" class="card alert alert-danger" style="text-align: center; padding: 40px;">
+      <h2>⚠️ Store Access Suspended</h2>
+      <p style="margin-top: 10px;">
+        {{ myStore.status === 'pending' ? 'Your store application is pending approval by the administrator.' : 'Your store has been deactivated. Please contact support.' }}
+      </p>
+    </div>
+  </div>
+</div>

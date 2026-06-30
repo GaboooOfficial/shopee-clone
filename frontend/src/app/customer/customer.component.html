@@ -1,0 +1,438 @@
+<nav class="navbar">
+  <div class="container navbar-content">
+    <div class="brand">Shopee Clone by GJB</div>
+    <div class="user-info">
+      <span
+        >Welcome, <strong>{{ customerName }}</strong></span
+      >
+      <button
+        (click)="activeTab = 'cart'"
+        class="btn btn-secondary"
+        style="position: relative"
+      >
+        🛒 Cart
+        <span
+          *ngIf="cart.length > 0"
+          style="
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ee4d2d;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 700;
+          "
+        >
+          {{ getCartItemsCount() }}
+        </span>
+      </button>
+      <button (click)="logout()" class="btn btn-secondary">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- Alerts -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+  <div
+    class="grid grid-3"
+    style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 30px"
+  >
+    <button
+      [class.btn-primary]="activeTab === 'catalog'"
+      [class.btn-secondary]="activeTab !== 'catalog'"
+      (click)="activeTab = 'catalog'; selectedStoreForMap = null"
+      class="btn"
+    >
+      Browse Products
+    </button>
+    <button
+      [class.btn-primary]="activeTab === 'cart'"
+      [class.btn-secondary]="activeTab !== 'cart'"
+      (click)="activeTab = 'cart'; selectedStoreForMap = null"
+      class="btn"
+    >
+      Shopping Cart ({{ cart.length }})
+    </button>
+    <button
+      [class.btn-primary]="activeTab === 'orders'"
+      [class.btn-secondary]="activeTab !== 'orders'"
+      (click)="activeTab = 'orders'; selectedStoreForMap = null"
+      class="btn"
+    >
+      My Purchase History
+    </button>
+  </div>
+
+  <!-- CATALOG TAB -->
+  <div *ngIf="activeTab === 'catalog'">
+    <!-- Search / Filter bar -->
+    <div class="card" style="display: flex; gap: 15px; flex-wrap: wrap">
+      <input
+        type="text"
+        placeholder="Search products..."
+        class="form-control"
+        style="flex: 2; min-width: 200px"
+        [(ngModel)]="filters.search"
+        (ngModelChange)="loadProducts()"
+      />
+
+      <select
+        class="form-control"
+        style="flex: 1; min-width: 150px"
+        [(ngModel)]="filters.categoryId"
+        (ngModelChange)="loadProducts()"
+      >
+        <option value="">All Categories</option>
+        <option *ngFor="let cat of categories" [value]="cat._id">
+          {{ cat.name }}
+        </option>
+      </select>
+
+      <select
+        class="form-control"
+        style="flex: 1; min-width: 150px"
+        [(ngModel)]="filters.storeId"
+        (ngModelChange)="loadProducts()"
+      >
+        <option value="">All Stores</option>
+        <option *ngFor="let st of stores" [value]="st._id">
+          {{ st.name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Map Preview of Selected Store Location -->
+    <div *ngIf="selectedStoreForMap" class="card" style="margin-bottom: 25px">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        "
+      >
+        <h3>📍 Store Location Pin: {{ selectedStoreForMap.name }}</h3>
+        <button
+          (click)="selectedStoreForMap = null"
+          class="btn btn-secondary"
+          style="padding: 4px 8px; font-size: 12px"
+        >
+          Close Map
+        </button>
+      </div>
+      <p style="font-size: 14px; color: #555; margin-bottom: 10px">
+        Address: {{ selectedStoreForMap.location?.address }}
+      </p>
+      <!-- Leaflet map in readOnly mode -->
+      <app-map
+        [lat]="selectedStoreForMap.location?.lat"
+        [lng]="selectedStoreForMap.location?.lng"
+        [readOnly]="true"
+      ></app-map>
+    </div>
+
+    <!-- Product list grid -->
+    <div
+      *ngIf="products.length === 0"
+      style="
+        padding: 40px;
+        text-align: center;
+        color: #888;
+        background: white;
+        border-radius: var(--border-radius);
+        border: 1px solid #eaeaea;
+      "
+    >
+      No products match your search/filter criteria.
+    </div>
+
+    <div *ngIf="products.length > 0" class="grid grid-4">
+      <div
+        *ngFor="let prod of products"
+        class="card"
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 15px;
+          height: 100%;
+        "
+      >
+        <div>
+          <img
+            [src]="prod.imageUrl || 'https://via.placeholder.com/200'"
+            alt="prod image"
+            style="
+              width: 100%;
+              height: 160px;
+              object-fit: cover;
+              border-radius: 6px;
+              margin-bottom: 12px;
+            "
+          />
+          <h3 style="font-size: 16px; margin-bottom: 5px">{{ prod.name }}</h3>
+          <p
+            style="
+              color: #666;
+              font-size: 13px;
+              min-height: 40px;
+              margin-bottom: 10px;
+            "
+          >
+            {{ prod.description }}
+          </p>
+
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+            "
+          >
+            <span
+              style="
+                font-size: 12px;
+                background: #eaeaea;
+                padding: 2px 6px;
+                border-radius: 4px;
+                color: #444;
+              "
+              >{{ prod.categoryId?.name }}</span
+            >
+            <span style="font-size: 12px; color: #999"
+              >Stock: {{ prod.stock }}</span
+            >
+          </div>
+
+          <div style="font-size: 13px; color: #666; margin-bottom: 15px">
+            🏪 Store:
+            <strong style="color: #444">{{ prod.storeId?.name }}</strong>
+            <button
+              (click)="viewStoreLocation(prod.storeId)"
+              class="btn btn-secondary"
+              style="padding: 2px 6px; font-size: 11px; margin-left: 5px"
+            >
+              📍 View Map
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-top: auto;
+            "
+          >
+            <span
+              style="
+                color: var(--primary-color);
+                font-size: 20px;
+                font-weight: 700;
+              "
+              >₱{{ prod.price }}</span
+            >
+            <button
+              [disabled]="prod.stock === 0"
+              (click)="addToCart(prod)"
+              class="btn btn-primary"
+              style="padding: 6px 12px; font-size: 13px"
+            >
+              {{ prod.stock === 0 ? "Out of Stock" : "Add to Cart" }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART TAB -->
+  <div
+    *ngIf="activeTab === 'cart'"
+    class="grid grid-3"
+    style="grid-template-columns: 2fr 1fr; gap: 30px"
+  >
+    <!-- Left: Cart items list -->
+    <div class="card">
+      <h2>Shopping Cart</h2>
+      <div
+        *ngIf="cart.length === 0"
+        style="padding: 40px; text-align: center; color: #888"
+      >
+        Your cart is empty. Browse products and add items!
+      </div>
+
+      <table *ngIf="cart.length > 0">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of cart; let i = index">
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px">
+                <img
+                  [src]="item.imageUrl || 'https://via.placeholder.com/60'"
+                  style="
+                    width: 40px;
+                    height: 40px;
+                    object-fit: cover;
+                    border-radius: 4px;
+                  "
+                />
+                <div>
+                  <strong>{{ item.name }}</strong
+                  ><br /><small style="color: #666"
+                    >Store: {{ item.storeName }}</small
+                  >
+                </div>
+              </div>
+            </td>
+            <td>₱{{ item.price }}</td>
+            <td>
+              <input
+                type="number"
+                [(ngModel)]="item.quantity"
+                (ngModelChange)="onCartQuantityChanged(i)"
+                min="1"
+                [max]="item.stock"
+                class="form-control"
+                style="width: 70px; display: inline-block; padding: 4px 8px"
+              />
+            </td>
+            <td>
+              <strong>₱{{ item.price * item.quantity }}</strong>
+            </td>
+            <td>
+              <button
+                (click)="removeFromCart(i)"
+                class="btn btn-danger"
+                style="padding: 4px 8px; font-size: 12px"
+              >
+                Remove
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Right: Checkout summary -->
+    <div *ngIf="cart.length > 0" class="card">
+      <h2>Order Summary</h2>
+      <div
+        style="margin: 20px 0; border-top: 1px solid #eaeaea; padding-top: 15px"
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            margin-bottom: 20px;
+          "
+        >
+          <span>Total Price:</span>
+          <strong style="color: var(--primary-color)"
+            >₱{{ getCartTotal() }}</strong
+          >
+        </div>
+
+        <form (ngSubmit)="checkout()">
+          <div class="form-group">
+            <label for="ship-addr">Shipping Address</label>
+            <textarea
+              id="ship-addr"
+              name="shipAddr"
+              class="form-control"
+              rows="3"
+              placeholder="Enter delivery address..."
+              [(ngModel)]="shippingAddress"
+              required
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            [disabled]="!shippingAddress"
+            class="btn btn-primary btn-block"
+          >
+            Place Order
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- PURCHASE HISTORY TAB -->
+  <div *ngIf="activeTab === 'orders'" class="card">
+    <h2>My Purchase History</h2>
+    <div
+      *ngIf="orders.length === 0"
+      style="padding: 30px; text-align: center; color: #888"
+    >
+      You haven't made any purchases yet.
+    </div>
+    <table *ngIf="orders.length > 0">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Date</th>
+          <th>Items Purchased</th>
+          <th>Total Cost</th>
+          <th>Fulfillment Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <td>
+            <small>{{ order._id }}</small>
+          </td>
+          <td>{{ order.createdAt | date: "short" }}</td>
+          <td>
+            <div *ngFor="let item of order.items">
+              - {{ item.productId?.name }} (Qty: {{ item.quantity }} x ₱{{
+                item.price
+              }})<br />
+              <small style="color: #666; margin-left: 10px"
+                >Store: {{ item.storeId?.name }}</small
+              >
+            </div>
+          </td>
+          <td>
+            <strong style="color: var(--primary-color)"
+              >₱{{ order.totalAmount }}</strong
+            >
+          </td>
+          <td>
+            <span
+              class="badge"
+              [class.badge-pending]="order.status === 'pending'"
+              [class.badge-approved]="
+                order.status === 'processing' ||
+                order.status === 'shipped' ||
+                order.status === 'delivered'
+              "
+              [class.badge-rejected]="order.status === 'cancelled'"
+            >
+              {{ order.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

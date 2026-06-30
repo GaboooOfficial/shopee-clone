@@ -1,0 +1,120 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="brand-header">
+      <span class="logo">🧡 Shopee Clone</span>
+      <p>Your one-stop shopping destination</p>
+    </div>
+
+    <!-- Tab selection -->
+    <div class="tab-headers">
+      <button [class.active]="isLoginTab" (click)="setTab(true)" class="tab-btn">Login</button>
+      <button [class.active]="!isLoginTab" (click)="setTab(false)" class="tab-btn">Register</button>
+    </div>
+
+    <!-- Error/Success Alerts -->
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+    <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+    <!-- Login Form -->
+    <form *ngIf="isLoginTab" (ngSubmit)="onLogin()" #loginForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label for="login-email">Email Address</label>
+        <input 
+          type="email" 
+          id="login-email" 
+          name="email" 
+          class="form-control" 
+          placeholder="Enter email"
+          [(ngModel)]="loginData.email" 
+          required 
+          #loginEmail="ngModel"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input 
+          type="password" 
+          id="login-password" 
+          name="password" 
+          class="form-control" 
+          placeholder="Enter password"
+          [(ngModel)]="loginData.password" 
+          required 
+        />
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid || isLoading" class="btn btn-primary btn-block">
+        {{ isLoading ? 'Logging in...' : 'Log In' }}
+      </button>
+    </form>
+
+    <!-- Register Form -->
+    <form *ngIf="!isLoginTab" (ngSubmit)="onRegister()" #registerForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label for="reg-name">Full Name</label>
+        <input 
+          type="text" 
+          id="reg-name" 
+          name="name" 
+          class="form-control" 
+          placeholder="John Doe"
+          [(ngModel)]="registerData.profile.name" 
+          required 
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email">Email Address</label>
+        <input 
+          type="email" 
+          id="reg-email" 
+          name="email" 
+          class="form-control" 
+          placeholder="name@example.com"
+          [(ngModel)]="registerData.email" 
+          required 
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="reg-phone">Phone Number</label>
+        <input 
+          type="text" 
+          id="reg-phone" 
+          name="phone" 
+          class="form-control" 
+          placeholder="0917XXXXXXX"
+          [(ngModel)]="registerData.profile.phone" 
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password">Password</label>
+        <input 
+          type="password" 
+          id="reg-password" 
+          name="password" 
+          class="form-control" 
+          placeholder="Minimum 6 characters"
+          [(ngModel)]="registerData.password" 
+          required 
+          minlength="6"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="reg-role">I want to register as a:</label>
+        <select id="reg-role" name="role" class="form-control" [(ngModel)]="registerData.role" required>
+          <option value="customer">Customer (Buy Products)</option>
+          <option value="store_owner">Store Owner (Sell Products)</option>
+        </select>
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid || isLoading" class="btn btn-primary btn-block">
+        {{ isLoading ? 'Creating Account...' : 'Register' }}
+      </button>
+    </form>
+  </div>
+</div>
