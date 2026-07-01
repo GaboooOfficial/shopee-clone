@@ -414,4 +414,16 @@ export class CustomerComponent implements OnInit, OnDestroy {
       this.socket.close();
     }
   }
+
+  getProductImageUrl(url: string): string {
+    if (!url || !url.trim()) return 'assets/shopee_logo.png';
+    const trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('assets/')) {
+      return trimmed;
+    }
+    if (trimmed.endsWith('.png') || trimmed.endsWith('.jpg') || trimmed.endsWith('.jpeg') || trimmed.endsWith('.webp')) {
+      return 'assets/' + trimmed;
+    }
+    return 'assets/shopee_logo.png';
+  }
 }

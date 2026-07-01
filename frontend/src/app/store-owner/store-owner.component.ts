@@ -160,6 +160,11 @@ export class StoreOwnerComponent implements OnInit, OnDestroy {
   }
 
   saveProduct() {
+    if (!this.productForm.categoryId) {
+      this.errorMessage = 'Please select a valid category.';
+      this.clearMessages();
+      return;
+    }
     if (this.editingProductId) {
       // Edit mode
       this.http.put<any>(`${this.baseUrl}/products/${this.editingProductId}`, this.productForm, { headers: this.authService.getAuthHeaders() }).subscribe({
@@ -358,5 +363,17 @@ export class StoreOwnerComponent implements OnInit, OnDestroy {
     if (this.socket) {
       this.socket.close();
     }
+  }
+
+  getProductImageUrl(url: string): string {
+    if (!url || !url.trim()) return 'assets/shopee_logo.png';
+    const trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('assets/')) {
+      return trimmed;
+    }
+    if (trimmed.endsWith('.png') || trimmed.endsWith('.jpg') || trimmed.endsWith('.jpeg') || trimmed.endsWith('.webp')) {
+      return 'assets/' + trimmed;
+    }
+    return 'assets/shopee_logo.png';
   }
 }

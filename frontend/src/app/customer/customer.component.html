@@ -160,7 +160,7 @@
       <div *ngIf="products.length > 0" class="product-cards-grid">
         <div *ngFor="let prod of products" class="card product-card">
           <div class="prod-card-top">
-            <img [src]="prod.imageUrl || 'assets/shopee_logo.png'" alt="prod image" class="prod-img" />
+            <img [src]="getProductImageUrl(prod.imageUrl)" alt="prod image" class="prod-img" />
             <h3 class="prod-title">{{ prod.name }}</h3>
             <p class="prod-description">{{ prod.description }}</p>
 
@@ -224,7 +224,7 @@
                 <tr *ngFor="let item of cart; let i = index">
                   <td>
                     <div class="table-prod-info">
-                      <img [src]="item.imageUrl || 'assets/shopee_logo.png'" class="table-prod-img" />
+                      <img [src]="getProductImageUrl(item.imageUrl)" class="table-prod-img" />
                       <div>
                         <strong>{{ item.name }}</strong>
                         <br/>

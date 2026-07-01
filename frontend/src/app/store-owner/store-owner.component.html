@@ -216,7 +216,7 @@
                 <tbody>
                   <tr *ngFor="let prod of products">
                     <td>
-                      <img [src]="prod.imageUrl || 'assets/shopee_logo.png'" alt="prod image" class="table-prod-img" />
+                      <img [src]="getProductImageUrl(prod.imageUrl)" alt="prod image" class="table-prod-img" />
                     </td>
                     <td>
                       <strong>{{ prod.name }}</strong>
