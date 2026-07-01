@@ -1,93 +1,624 @@
-.auth-wrapper {
+.shopee-auth-page {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #222;
+  background-color: #fff;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Brand Header */
+.shopee-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.header-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.shopee-logo-svg {
+  width: 42px;
+  height: 42px;
+}
+
+.brand-name {
+  color: #ee4d2d;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.header-title {
+  font-size: 36px;
+  color: #222;
+  margin-left: 20px;
+  font-weight: 500;
+  border-left: 1px solid #ccc;
+  padding-left: 20px;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.need-help-link {
+  color: #ee4d2d;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.need-help-link:hover {
+  color: #d73c1f;
+}
+
+/* Banner Section */
+.auth-banner-section {
+  background-color: #ee4d2d;
+  background-image: linear-gradient(180deg, #ff5722, #ee4d2d);
+  padding: 60px 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.banner-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  gap: 40px;
+}
+
+.banner-promo-graphic {
+  text-align: center;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #ee4d2d 0%, #ff7337 100%);
-  padding: 20px;
 }
 
-.auth-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+.promo-image {
+  max-width: 100%;
+  max-height: 450px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* Auth Card */
+.auth-form-card {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
   width: 100%;
-  max-width: 450px;
-  padding: 40px 30px;
+  max-width: 400px;
+  margin-left: auto;
+  box-sizing: border-box;
 }
 
-.brand-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.brand-header .logo {
-  font-size: 28px;
-  font-weight: 800;
-  color: #ee4d2d;
-}
-
-.brand-header p {
-  color: #666;
-  font-size: 14px;
-  margin-top: 5px;
-}
-
-.tab-headers {
+.card-header-row {
   display: flex;
-  border-bottom: 2px solid #f0f0f0;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 25px;
 }
 
-.tab-btn {
-  flex: 1;
+.card-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: #222;
+  margin: 0;
+}
+
+.qr-login-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.qr-label {
+  border: 1px solid #ffe699;
+  background-color: #fffcf5;
+  color: #ffbf00;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.qr-icon {
+  width: 28px;
+  height: 28px;
+}
+
+/* Inputs & Forms */
+.shopee-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-wrapper {
+  margin-bottom: 15px;
+  position: relative;
+  width: 100%;
+}
+
+.shopee-input {
+  width: 100%;
+  height: 40px;
+  padding: 10px 12px;
+  border: 1px solid #dbdbdb;
+  border-radius: 2px;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+  background-color: #fff;
+  color: #222;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.shopee-input:focus {
+  border-color: #888;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+}
+
+.shopee-input::placeholder {
+  color: #bbb;
+}
+
+/* Select wrapper */
+.select-wrapper {
+  position: relative;
+}
+
+.shopee-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23888888' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 18px;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+.password-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.password-input-container .shopee-input {
+  padding-right: 90px;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 70px;
   background: none;
   border: none;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #888;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 12px;
+  color: #888;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.forgot-link {
+  position: absolute;
+  right: 12px;
+  color: #0055aa;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+.stay-signed-in-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.stay-signed-in-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+
+.stay-signed-in-checkbox {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #ee4d2d;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stay-signed-in-checkbox:checked {
+  background-color: #ee4d2d;
+}
+
+.stay-signed-in-checkbox:checked::after {
+  content: "✔";
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.help-question-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #999;
+  color: #fff;
+  font-size: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.btn-shopee-submit {
+  background-color: #ee4d2d;
+  color: #fff;
+  border: none;
+  width: 100%;
+  height: 40px;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-shopee-submit:disabled {
+  background-color: #f5c2b8;
+  cursor: not-allowed;
+}
+
+.btn-shopee-submit:hover:not(:disabled) {
+  background-color: #d73c1f;
+}
+
+/* Divider */
+.form-divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.form-divider::before,
+.form-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #dbdbdb;
+}
+
+.divider-text {
+  padding: 0 16px;
+  color: #ccc;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Social Buttons */
+.social-login-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-social {
+  flex: 1;
+  height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background-color: #fff;
+  border-radius: 2px;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-social:hover {
+  background-color: #fafafa;
+}
+
+.social-icon-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+/* Disclaimer & Redirection */
+.terms-disclaimer {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+.terms-disclaimer a {
+  color: #ee4d2d;
+  text-decoration: none;
+}
+
+.terms-disclaimer a:hover {
+  text-decoration: underline;
+}
+
+.signup-redirect {
+  font-size: 14px;
+  color: #ccc;
+  text-align: center;
+}
+
+.btn-link-action {
+  background: none;
+  border: none;
+  color: #ee4d2d;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
   font-family: inherit;
 }
 
-.tab-btn:hover {
-  color: #ee4d2d;
+.btn-link-action:hover {
+  text-decoration: underline;
 }
 
-.tab-btn.active {
-  color: #ee4d2d;
-  border-bottom: 2px solid #ee4d2d;
-  margin-bottom: -2px;
-}
-
-.auth-form .form-group {
-  margin-bottom: 20px;
-}
-
-.btn-block {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  margin-top: 15px;
-}
-
+/* Alerts styling */
 .alert {
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 2px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  text-align: left;
 }
 
 .alert-danger {
-  background-color: #fce8e6;
-  color: #c53030;
-  border: 1px solid #f5c2c2;
+  background-color: #fff9f9;
+  border: 1px solid #ffdbdb;
+  color: #ff424e;
 }
 
 .alert-success {
-  background-color: #e6fffa;
-  color: #234e52;
-  border: 1px solid #b2f5ea;
+  background-color: #f7fffa;
+  border: 1px solid #dbffd6;
+  color: #26a99e;
 }
+
+/* Shopee Footer */
+.shopee-footer {
+  background-color: #fbfbfb;
+  border-top: 1px solid #e8e8e8;
+  padding: 60px 0 40px;
+  width: 100%;
+}
+
+.footer-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-col-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.87);
+  margin-top: 0;
+  margin-bottom: 15px;
+  letter-spacing: 0.5px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 12px;
+  text-decoration: none;
+  transition: color 0.2s;
+  display: inline-block;
+}
+
+.footer-links a:hover {
+  color: #ee4d2d;
+}
+
+/* Payment & Logistics Badges */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-width: 220px;
+}
+
+.badge-item {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 2px;
+  padding: 5px 2px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.02);
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  box-sizing: border-box;
+}
+
+.badge-item.spay { color: #ff5722; border-color: #ff5722; }
+.badge-item.spaylater { color: #f53d2d; border-color: #f53d2d; }
+.badge-item.gcash { color: #0055aa; border-color: #0055aa; }
+.badge-item.card-brand { font-style: italic; color: #1e3050; }
+.badge-item.bank { color: #2e8b57; }
+.badge-item.carrier { color: #e67e22; border-style: dashed; }
+
+.social-links-list .soc-icon {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+/* App Download section */
+.download-layout {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.qr-code-box {
+  background-color: #fff;
+  padding: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.store-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.store-badge {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 2px;
+  padding: 4px 10px;
+  font-size: 10px;
+  color: rgba(0,0,0,0.8);
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.02);
+  min-width: 90px;
+  box-sizing: border-box;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .banner-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .banner-promo-graphic {
+    display: none; /* Hide campaign image on smaller tablets/mobiles like official Shopee */
+  }
+  
+  .auth-form-card {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .shopee-header {
+    height: 70px;
+  }
+  
+  .brand-name {
+    font-size: 26px;
+  }
+  
+  .header-title {
+    font-size: 18px;
+    margin-left: 10px;
+    padding-left: 10px;
+  }
+  
+  .auth-banner-section {
+    padding: 30px 0;
+  }
+  
+  .auth-form-card {
+    padding: 20px 15px;
+  }
+  
+  .social-login-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .footer-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+

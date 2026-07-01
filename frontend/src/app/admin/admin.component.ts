@@ -9,7 +9,7 @@ import { AuthService } from '../core/services/auth.service';
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent implements OnInit {
-  activeTab = 'stores';
+  activeTab = 'overview';
   adminEmail = '';
   pendingStores: any[] = [];
   allStores: any[] = [];
@@ -17,6 +17,15 @@ export class AdminComponent implements OnInit {
   categories: any[] = [];
   successMessage = '';
   errorMessage = '';
+
+  stats = {
+    totalRevenue: 0,
+    totalOrders: 0,
+    registeredUsers: 0,
+    merchantStores: 0,
+    activeProducts: 0,
+    recentOrders: [] as any[]
+  };
 
   newCategory = {
     name: '',
@@ -36,6 +45,7 @@ export class AdminComponent implements OnInit {
     if (adminUser) {
       this.adminEmail = adminUser.email;
     }
+    this.loadStats();
     this.loadPendingStores();
     this.loadAllStores();
     this.loadUsers();
@@ -45,6 +55,15 @@ export class AdminComponent implements OnInit {
   logout() {
     this.authService.logout();
     this.router.navigate(['/auth']);
+  }
+
+  loadStats() {
+    this.http.get<any>(`${this.baseUrl}/admin/dashboard-stats`, { headers: this.authService.getAuthHeaders() }).subscribe({
+      next: (res) => {
+        if (res.success) this.stats = res.data;
+      },
+      error: (err) => this.errorMessage = err.error?.message || 'Failed to load dashboard statistics'
+    });
   }
 
   private clearMessages() {
@@ -80,6 +99,7 @@ export class AdminComponent implements OnInit {
           this.successMessage = 'Store approved successfully!';
           this.loadPendingStores();
           this.loadAllStores();
+          this.loadStats();
           this.clearMessages();
         }
       },
@@ -94,6 +114,7 @@ export class AdminComponent implements OnInit {
           this.successMessage = 'Store request rejected.';
           this.loadPendingStores();
           this.loadAllStores();
+          this.loadStats();
           this.clearMessages();
         }
       },
@@ -107,6 +128,7 @@ export class AdminComponent implements OnInit {
         if (res.success) {
           this.successMessage = res.message;
           this.loadAllStores();
+          this.loadStats();
           this.clearMessages();
         }
       },
@@ -130,6 +152,7 @@ export class AdminComponent implements OnInit {
         if (res.success) {
           this.successMessage = res.message;
           this.loadUsers();
+          this.loadStats();
           this.clearMessages();
         }
       },
@@ -154,6 +177,7 @@ export class AdminComponent implements OnInit {
           this.successMessage = 'Category created successfully!';
           this.newCategory = { name: '', description: '' };
           this.loadCategories();
+          this.loadStats();
           this.clearMessages();
         }
       },

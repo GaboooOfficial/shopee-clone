@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '../core/services/auth.service';
   templateUrl: './store-owner.component.html',
   styleUrls: ['./store-owner.component.css']
 })
-export class StoreOwnerComponent implements OnInit {
+export class StoreOwnerComponent implements OnInit, OnDestroy {
   sellerEmail = '';
   myStore: any = null;
   activeTab = 'products';
@@ -27,6 +27,23 @@ export class StoreOwnerComponent implements OnInit {
       address: ''
     }
   };
+
+  storeSettings = {
+    name: '',
+    description: '',
+    location: {
+      lat: 14.5995,
+      lng: 120.9842,
+      address: ''
+    }
+  };
+
+  chats: any[] = [];
+  selectedChat: any = null;
+  chatMessages: any[] = [];
+  newMessageText = '';
+  currentUserId = '';
+  private socket: WebSocket | null = null;
 
   productForm = {
     name: '',
@@ -50,12 +67,17 @@ export class StoreOwnerComponent implements OnInit {
     const user = this.authService.currentUserValue;
     if (user) {
       this.sellerEmail = user.email;
+      this.currentUserId = user._id || '';
+      this.initWebSocket();
     }
     this.loadMyStore();
     this.loadCategories();
   }
 
   logout() {
+    if (this.socket) {
+      this.socket.close();
+    }
     this.authService.logout();
     this.router.navigate(['/auth']);
   }
@@ -79,9 +101,20 @@ export class StoreOwnerComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this.myStore = res.data;
+          // Populate settings form
+          this.storeSettings = {
+            name: this.myStore.name || '',
+            description: this.myStore.description || '',
+            location: {
+              lat: this.myStore.location?.lat || 14.5995,
+              lng: this.myStore.location?.lng || 120.9842,
+              address: this.myStore.location?.address || ''
+            }
+          };
           if (this.myStore.status === 'approved' && !this.myStore.isDeactivated) {
             this.loadProducts();
             this.loadOrders();
+            this.loadChats();
           }
         }
       },
@@ -220,5 +253,110 @@ export class StoreOwnerComponent implements OnInit {
       },
       error: (err) => this.errorMessage = err.error?.message || 'Failed to update order status'
     });
+  }
+
+  // --- SETTINGS ACTIONS ---
+  onSettingsLocationSelected(coords: { lat: number; lng: number }) {
+    this.storeSettings.location.lat = coords.lat;
+    this.storeSettings.location.lng = coords.lng;
+  }
+
+  updateStoreSettings() {
+    this.http.put<any>(`${this.baseUrl}/stores/${this.myStore._id}`, this.storeSettings, { headers: this.authService.getAuthHeaders() }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.successMessage = 'Store settings updated successfully!';
+          this.myStore = res.data;
+          this.clearMessages();
+        }
+      },
+      error: (err) => this.errorMessage = err.error?.message || 'Failed to update store settings'
+    });
+  }
+
+  // --- MESSAGING ACTIONS ---
+  loadChats() {
+    this.http.get<any>(`${this.baseUrl}/messages/conversations`, { headers: this.authService.getAuthHeaders() }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.chats = res.data;
+        }
+      },
+      error: (err) => this.errorMessage = err.error?.message || 'Failed to load conversations'
+    });
+  }
+
+  selectChat(chat: any) {
+    this.selectedChat = chat;
+    this.loadMessages(chat.otherUser._id);
+  }
+
+  loadMessages(otherUserId: string) {
+    this.http.get<any>(`${this.baseUrl}/messages/conversation/${otherUserId}`, { headers: this.authService.getAuthHeaders() }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.chatMessages = res.data;
+          // Mark the chat's last message as read locally
+          if (this.selectedChat) {
+            this.selectedChat.lastMessage.isRead = true;
+          }
+        }
+      },
+      error: (err) => this.errorMessage = err.error?.message || 'Failed to load messages'
+    });
+  }
+
+  sendChatMessage() {
+    if (!this.newMessageText.trim() || !this.selectedChat) return;
+
+    const payload = {
+      receiverId: this.selectedChat.otherUser._id,
+      content: this.newMessageText
+    };
+
+    this.http.post<any>(`${this.baseUrl}/messages`, payload, { headers: this.authService.getAuthHeaders() }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.chatMessages.push(res.data);
+          this.newMessageText = '';
+          // Refresh conversation list to get latest messages
+          this.loadChats();
+        }
+      },
+      error: (err) => this.errorMessage = err.error?.message || 'Failed to send message'
+    });
+  }
+
+  // --- WEBSOCKET ACTIONS ---
+  initWebSocket() {
+    if (this.socket) {
+      this.socket.close();
+    }
+    this.socket = new WebSocket(`ws://localhost:3000?userId=${this.currentUserId}`);
+
+    this.socket.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload.type === 'new_message') {
+          const message = payload.data;
+          if (this.selectedChat && (message.senderId._id === this.selectedChat.otherUser._id || message.senderId === this.selectedChat.otherUser._id)) {
+            this.chatMessages.push(message);
+          }
+          this.loadChats();
+        }
+      } catch (e) {
+        console.error('Error handling WebSocket message:', e);
+      }
+    };
+
+    this.socket.onclose = () => {
+      console.log('🔌 WebSocket connection closed.');
+    };
+  }
+
+  ngOnDestroy() {
+    if (this.socket) {
+      this.socket.close();
+    }
   }
 }

@@ -1,160 +1,465 @@
-<nav class="navbar">
-  <div class="container navbar-content">
-    <div class="brand">🧡 Shopee Clone Admin Portal</div>
-    <div class="user-info">
-      <span>Logged in as: <strong>{{ adminEmail }}</strong></span>
-      <button (click)="logout()" class="btn btn-secondary">Logout</button>
+<!-- Top Utility & Brand Header -->
+<div class="header-wrapper">
+  <!-- Dark Utility Bar -->
+  <div class="utility-bar">
+    <div class="container utility-content">
+      <div class="utility-left">
+        <a href="#" class="util-link">Start Selling</a>
+        <a href="#" class="util-link">Download</a>
+      </div>
+      <div class="utility-right">
+        <span class="util-item">🔔 Notifications</span>
+        <span class="util-item">❓ Help</span>
+        <span class="util-item user-email">👤 {{ adminEmail }}</span>
+        <span class="util-item">My Account</span>
+        <span class="util-item active-page">Admin Panel</span>
+        <button class="logout-btn" (click)="logout()">Logout</button>
+      </div>
     </div>
   </div>
-</nav>
 
-<div class="container">
-  <div class="grid grid-3" style="margin-bottom: 30px;">
-    <button [class.btn-primary]="activeTab === 'stores'" [class.btn-secondary]="activeTab !== 'stores'" (click)="activeTab = 'stores'" class="btn">Store Approvals & Stores</button>
-    <button [class.btn-primary]="activeTab === 'users'" [class.btn-secondary]="activeTab !== 'users'" (click)="activeTab = 'users'" class="btn">User Accounts</button>
-    <button [class.btn-primary]="activeTab === 'categories'" [class.btn-secondary]="activeTab !== 'categories'" (click)="activeTab = 'categories'" class="btn">Manage Categories</button>
-  </div>
-
-  <!-- Messages -->
-  <div *ngIf="successMessage" class="card alert alert-success" style="padding: 12px; margin-bottom: 20px;">{{ successMessage }}</div>
-  <div *ngIf="errorMessage" class="card alert alert-danger" style="padding: 12px; margin-bottom: 20px;">{{ errorMessage }}</div>
-
-  <!-- STORES TAB -->
-  <div *ngIf="activeTab === 'stores'">
-    <div class="card">
-      <h2>Pending Store Creations</h2>
-      <div *ngIf="pendingStores.length === 0" style="padding: 10px; color: #888;">No pending store creation applications.</div>
-      <table *ngIf="pendingStores.length > 0">
-        <thead>
-          <tr>
-            <th>Store Name</th>
-            <th>Description</th>
-            <th>Location Address</th>
-            <th>Coordinates</th>
-            <th>Owner Email</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let store of pendingStores">
-            <td><strong>{{ store.name }}</strong></td>
-            <td>{{ store.description }}</td>
-            <td>{{ store.location?.address || 'N/A' }}</td>
-            <td>lat: {{ store.location?.lat }}, lng: {{ store.location?.lng }}</td>
-            <td>{{ store.ownerId?.email }}</td>
-            <td>
-              <button (click)="approveStore(store._id)" class="btn btn-success" style="padding: 6px 12px; font-size: 13px; margin-right: 8px;">Approve</button>
-              <button (click)="rejectStore(store._id)" class="btn btn-danger" style="padding: 6px 12px; font-size: 13px;">Reject</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <!-- Orange Brand Header (Stays main-header, styled white in CSS) -->
+  <header class="main-header">
+    <div class="container header-content">
+      <div
+        class="header-brand"
+        style="display: flex; align-items: center; gap: 10px"
+      >
+        <img
+          src="assets/shopee_logo.png"
+          alt="Shopee Logo"
+          style="height: 78px; object-fit: contain"
+        />
+        <span class="header-title">Admin Center</span>
+      </div>
+      <div class="header-actions">
+        <div class="cart-icon-wrapper">
+          <span class="cart-badge">🛒</span>
+        </div>
+      </div>
     </div>
+  </header>
+</div>
 
-    <div class="card" style="margin-top: 30px;">
-      <h2>All Registered Stores</h2>
-      <div *ngIf="allStores.length === 0" style="padding: 10px; color: #888;">No stores registered.</div>
-      <table *ngIf="allStores.length > 0">
-        <thead>
-          <tr>
-            <th>Store Name</th>
-            <th>Location Address</th>
-            <th>Status</th>
-            <th>Activity</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let store of allStores">
-            <td><strong>{{ store.name }}</strong></td>
-            <td>{{ store.location?.address || 'N/A' }}</td>
-            <td>
-              <span class="badge" [ngClass]="'badge-' + store.status">{{ store.status }}</span>
-            </td>
-            <td>
-              <span class="badge" [class.badge-approved]="!store.isDeactivated" [class.badge-rejected]="store.isDeactivated">
-                {{ store.isDeactivated ? 'Deactivated' : 'Active' }}
-              </span>
-            </td>
-            <td>
-              <button (click)="toggleStoreActive(store._id)" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">
-                {{ store.isDeactivated ? 'Activate' : 'Deactivate' }}
+<!-- Main Split Panel Layout with Orange Body Wrapper -->
+<div class="body-wrapper">
+  <div class="container main-content-wrapper">
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar-panel">
+      <h3 class="sidebar-title">Admin Center</h3>
+      <ul class="sidebar-menu">
+        <li
+          [class.active]="activeTab === 'overview'"
+          (click)="activeTab = 'overview'"
+          class="menu-item"
+        >
+          Dashboard Overview
+          <span class="active-indicator"></span>
+        </li>
+        <li
+          [class.active]="activeTab === 'categories'"
+          (click)="activeTab = 'categories'"
+          class="menu-item"
+        >
+          Product Categories
+          <span class="active-indicator"></span>
+        </li>
+        <li
+          [class.active]="activeTab === 'stores'"
+          (click)="activeTab = 'stores'"
+          class="menu-item"
+        >
+          Store Approvers
+          <span class="active-indicator"></span>
+        </li>
+        <li
+          [class.active]="activeTab === 'users'"
+          (click)="activeTab = 'users'"
+          class="menu-item"
+        >
+          Account Management
+          <span class="active-indicator"></span>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Right Dashboard Content Pane -->
+    <main class="content-pane">
+      <!-- Messages & Alerts -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+
+      <!-- 1. DASHBOARD OVERVIEW TAB -->
+      <div *ngIf="activeTab === 'overview'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">Platform Overview</h2>
+          <p class="pane-subtitle">
+            Key metrics and statistics across the entire LazShopee platform
+          </p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <!-- Revenue -->
+          <div class="stat-card">
+            <div class="stat-icon-wrapper revenue-icon">💰</div>
+            <div class="stat-info">
+              <h4 class="stat-value">
+                ₱{{ stats.totalRevenue | number: "1.2-2" }}
+              </h4>
+              <span class="stat-label">TOTAL REVENUE</span>
+            </div>
+          </div>
+
+          <!-- Orders -->
+          <div class="stat-card">
+            <div class="stat-icon-wrapper orders-icon">🛒</div>
+            <div class="stat-info">
+              <h4 class="stat-value">{{ stats.totalOrders }}</h4>
+              <span class="stat-label">TOTAL ORDERS</span>
+            </div>
+          </div>
+
+          <!-- Users -->
+          <div class="stat-card">
+            <div class="stat-icon-wrapper users-icon">👥</div>
+            <div class="stat-info">
+              <h4 class="stat-value">{{ stats.registeredUsers }}</h4>
+              <span class="stat-label">REGISTERED USERS</span>
+            </div>
+          </div>
+
+          <!-- Merchant Stores -->
+          <div class="stat-card">
+            <div class="stat-icon-wrapper stores-icon">🏪</div>
+            <div class="stat-info">
+              <h4 class="stat-value">{{ stats.merchantStores }}</h4>
+              <span class="stat-label">MERCHANT STORES</span>
+            </div>
+          </div>
+
+          <!-- Active Products -->
+          <div class="stat-card">
+            <div class="stat-icon-wrapper products-icon">📦</div>
+            <div class="stat-info">
+              <h4 class="stat-value">{{ stats.activeProducts }}</h4>
+              <span class="stat-label">ACTIVE PRODUCTS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="card recent-orders-card">
+          <div class="card-header-row">
+            <h3 class="card-section-title">Recent Orders 📢</h3>
+            <p class="card-section-subtitle">
+              Monitor recent transactions across all stores
+            </p>
+          </div>
+
+          <div class="table-container">
+            <table class="shopee-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer Email</th>
+                  <th>Total Amount</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="stats.recentOrders.length === 0">
+                  <td colspan="5" class="empty-table-text">
+                    No recent orders found.
+                  </td>
+                </tr>
+                <tr *ngFor="let order of stats.recentOrders">
+                  <td class="order-id-cell">{{ order._id }}</td>
+                  <td>{{ order.customerId?.email }}</td>
+                  <td class="amount-cell">
+                    ₱{{ order.totalAmount | number: "1.2-2" }}
+                  </td>
+                  <td>
+                    <span
+                      class="status-badge"
+                      [class.status-delivered]="
+                        order.status === 'delivered' ||
+                        order.status === 'shipped'
+                      "
+                      [class.status-pending]="
+                        order.status === 'pending' ||
+                        order.status === 'processing'
+                      "
+                      [class.status-cancelled]="order.status === 'cancelled'"
+                    >
+                      {{
+                        order.status === "delivered"
+                          ? "Delivered"
+                          : order.status === "cancelled"
+                            ? "Cancelled"
+                            : "Preparing"
+                      }}
+                    </span>
+                  </td>
+                  <td class="date-cell">
+                    {{ order.createdAt | date: "medium" }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. PRODUCT CATEGORIES TAB -->
+      <div *ngIf="activeTab === 'categories'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">Product Categories</h2>
+          <p class="pane-subtitle">Manage catalog categories for listings</p>
+        </div>
+
+        <div class="categories-layout">
+          <!-- Add Category Form -->
+          <div class="card add-category-card">
+            <h3>Add New Category</h3>
+            <form (ngSubmit)="createCategory()" class="shopee-form">
+              <div class="form-group">
+                <label for="cat-name">Category Name</label>
+                <input
+                  type="text"
+                  id="cat-name"
+                  name="catName"
+                  class="form-control"
+                  placeholder="e.g. Electronics"
+                  [(ngModel)]="newCategory.name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="cat-desc">Description</label>
+                <textarea
+                  id="cat-desc"
+                  name="catDesc"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Category description..."
+                  [(ngModel)]="newCategory.description"
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">
+                Create Category
               </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+            </form>
+          </div>
 
-  <!-- USERS TAB -->
-  <div *ngIf="activeTab === 'users'" class="card">
-    <h2>User Accounts Management</h2>
-    <div *ngIf="users.length === 0" style="padding: 10px; color: #888;">No registered users found.</div>
-    <table *ngIf="users.length > 0">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let u of users">
-          <td>{{ u.profile?.name }}</td>
-          <td>{{ u.email }}</td>
-          <td><strong style="text-transform: uppercase;">{{ u.role }}</strong></td>
-          <td>
-            <span class="badge" [class.badge-approved]="u.status === 'active'" [class.badge-rejected]="u.status === 'deactivated'">
-              {{ u.status }}
-            </span>
-          </td>
-          <td>
-            <button (click)="toggleUserActive(u._id)" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">
-              {{ u.status === 'active' ? 'Deactivate' : 'Activate' }}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+          <!-- Categories Table -->
+          <div class="card categories-list-card">
+            <h3>Existing Categories</h3>
+            <div *ngIf="categories.length === 0" class="empty-state">
+              No categories available.
+            </div>
 
-  <!-- CATEGORIES TAB -->
-  <div *ngIf="activeTab === 'categories'" class="grid grid-2">
-    <div class="card">
-      <h2>Add New Category</h2>
-      <form (ngSubmit)="createCategory()">
-        <div class="form-group">
-          <label for="cat-name">Category Name</label>
-          <input type="text" id="cat-name" name="catName" class="form-control" placeholder="e.g. Electronics" [(ngModel)]="newCategory.name" required />
+            <table *ngIf="categories.length > 0" class="shopee-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cat of categories">
+                  <td>
+                    <strong>{{ cat.name }}</strong>
+                  </td>
+                  <td>{{ cat.description }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="cat-desc">Description</label>
-          <textarea id="cat-desc" name="catDesc" class="form-control" rows="3" placeholder="Category description..." [(ngModel)]="newCategory.description"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Create Category</button>
-      </form>
-    </div>
+      </div>
 
-    <div class="card">
-      <h2>Existing Categories</h2>
-      <div *ngIf="categories.length === 0" style="padding: 10px; color: #888;">No categories available.</div>
-      <table *ngIf="categories.length > 0">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cat of categories">
-            <td><strong>{{ cat.name }}</strong></td>
-            <td>{{ cat.description }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <!-- 3. STORE APPROVERS TAB -->
+      <div *ngIf="activeTab === 'stores'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">Store Approvals & Stores</h2>
+          <p class="pane-subtitle">
+            Review seller requests and moderate registered merchant stores
+          </p>
+        </div>
+
+        <!-- Pending Stores -->
+        <div class="card">
+          <h3>Pending Store Creations</h3>
+          <div *ngIf="pendingStores.length === 0" class="empty-state">
+            No pending store creation applications.
+          </div>
+
+          <table *ngIf="pendingStores.length > 0" class="shopee-table">
+            <thead>
+              <tr>
+                <th>Store Name</th>
+                <th>Description</th>
+                <th>Location Address</th>
+                <th>Owner Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let store of pendingStores">
+                <td>
+                  <strong>{{ store.name }}</strong>
+                </td>
+                <td>{{ store.description }}</td>
+                <td>{{ store.location?.address || "N/A" }}</td>
+                <td>{{ store.ownerId?.email }}</td>
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      (click)="approveStore(store._id)"
+                      class="btn btn-success btn-xs"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      (click)="rejectStore(store._id)"
+                      class="btn btn-danger btn-xs"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Registered Stores -->
+        <div class="card" style="margin-top: 30px">
+          <h3>All Registered Stores</h3>
+          <div *ngIf="allStores.length === 0" class="empty-state">
+            No stores registered.
+          </div>
+
+          <table *ngIf="allStores.length > 0" class="shopee-table">
+            <thead>
+              <tr>
+                <th>Store Name</th>
+                <th>Location Address</th>
+                <th>Status</th>
+                <th>Activity</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let store of allStores">
+                <td>
+                  <strong>{{ store.name }}</strong>
+                </td>
+                <td>{{ store.location?.address || "N/A" }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.badge-approved]="store.status === 'approved'"
+                    [class.badge-pending]="store.status === 'pending'"
+                    [class.badge-rejected]="store.status === 'rejected'"
+                  >
+                    {{ store.status }}
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.badge-approved]="!store.isDeactivated"
+                    [class.badge-rejected]="store.isDeactivated"
+                  >
+                    {{ store.isDeactivated ? "Deactivated" : "Active" }}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    (click)="toggleStoreActive(store._id)"
+                    class="btn btn-secondary btn-xs"
+                  >
+                    {{ store.isDeactivated ? "Activate" : "Deactivate" }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. ACCOUNT MANAGEMENT TAB -->
+      <div *ngIf="activeTab === 'users'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">User Accounts Management</h2>
+          <p class="pane-subtitle">
+            Moderate accounts and login access across the platform
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Registered Accounts</h3>
+          <div *ngIf="users.length === 0" class="empty-state">
+            No registered users found.
+          </div>
+
+          <table *ngIf="users.length > 0" class="shopee-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of users">
+                <td>{{ u.profile?.name }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                  <strong class="role-text">{{ u.role }}</strong>
+                </td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.badge-approved]="u.status === 'active'"
+                    [class.badge-rejected]="u.status === 'deactivated'"
+                  >
+                    {{ u.status }}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    (click)="toggleUserActive(u._id)"
+                    class="btn btn-secondary btn-xs"
+                  >
+                    {{ u.status === "active" ? "Deactivate" : "Activate" }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
   </div>
 </div>
+
+<!-- White Footer -->
+<footer class="main-footer">
+  <div class="container footer-content">
+    <p>© 2026 Shopee. All Rights Reserved.</p>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </div>
+  </div>
+</footer>
