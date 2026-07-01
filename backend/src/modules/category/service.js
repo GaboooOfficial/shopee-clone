@@ -1,11 +1,11 @@
-const Category = require('./model');
+const Category = require("./model");
 
 const createCategory = async (categoryData) => {
   const { name, description } = categoryData;
-  
+
   const existingCategory = await Category.findOne({ name });
   if (existingCategory) {
-    const error = new Error('Category already exists');
+    const error = new Error("Category already exists");
     error.statusCode = 400;
     throw error;
   }
@@ -20,5 +20,5 @@ const getCategories = async () => {
 
 module.exports = {
   createCategory,
-  getCategories
+  getCategories,
 };

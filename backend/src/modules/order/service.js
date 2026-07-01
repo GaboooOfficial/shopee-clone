@@ -93,9 +93,64 @@ const updateOrderStatus = async (ownerId, orderId, status) => {
   return order;
 };
 
+const cancelOrder = async (customerId, orderId) => {
+  const order = await Order.findOne({ _id: orderId, customerId });
+  if (!order) {
+    const error = new Error('Order not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (order.status !== 'pending' && order.status !== 'processing') {
+    const error = new Error('Order cannot be cancelled because it is already ' + order.status);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Restore inventory stocks
+  for (const item of order.items) {
+    const product = await Product.findById(item.productId);
+    if (product) {
+      product.stock += item.quantity;
+      await product.save();
+    }
+  }
+
+  order.status = 'cancelled';
+  await order.save();
+  return order;
+};
+
+const updateShippingAddress = async (customerId, orderId, address) => {
+  if (!address || !address.trim()) {
+    const error = new Error('Address is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const order = await Order.findOne({ _id: orderId, customerId });
+  if (!order) {
+    const error = new Error('Order not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (order.status !== 'pending') {
+    const error = new Error('Shipping address can only be changed while the order is pending');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  order.shippingAddress = address;
+  await order.save();
+  return order;
+};
+
 module.exports = {
   placeOrder,
   getCustomerOrders,
   getStoreOrders,
-  updateOrderStatus
+  updateOrderStatus,
+  cancelOrder,
+  updateShippingAddress
 };

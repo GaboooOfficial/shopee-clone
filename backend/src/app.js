@@ -31,6 +31,7 @@ app.use('/api/admin', require('./modules/admin/routes'));
 app.use('/api/stores', require('./modules/store/routes'));
 app.use('/api/products', require('./modules/product/routes'));
 app.use('/api/orders', require('./modules/order/routes'));
+app.use('/api/messages', require('./modules/message/routes'));
 
 // --- Error Handling Middleware ---
 app.use((err, req, res, next) => {

@@ -86,7 +86,7 @@ const getAllProducts = async (queryFilters) => {
   }
 
   return await Product.find(filter)
-    .populate('storeId', 'name location')
+    .populate('storeId', 'name location ownerId')
     .populate('categoryId', 'name');
 };
 

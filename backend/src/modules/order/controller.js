@@ -41,9 +41,30 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+const cancelOrder = async (req, res) => {
+  try {
+    const order = await orderService.cancelOrder(req.user._id, req.params.id);
+    return sendSuccess(res, order, 'Order cancelled successfully');
+  } catch (error) {
+    return sendError(res, error.message, error.statusCode || 500);
+  }
+};
+
+const updateShippingAddress = async (req, res) => {
+  try {
+    const { address } = req.body;
+    const order = await orderService.updateShippingAddress(req.user._id, req.params.id, address);
+    return sendSuccess(res, order, 'Shipping address updated successfully');
+  } catch (error) {
+    return sendError(res, error.message, error.statusCode || 500);
+  }
+};
+
 module.exports = {
   placeOrder,
   getCustomerOrders,
   getStoreOrders,
-  updateOrderStatus
+  updateOrderStatus,
+  cancelOrder,
+  updateShippingAddress
 };
