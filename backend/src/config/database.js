@@ -31,6 +31,44 @@ const connectDB = async () => {
       });
       console.log("👤 Seeded default admin user: admin@shopee.com / admin123");
     }
+
+    // Auto-seed categories if none exist
+    const Category = require("../modules/category/model");
+    const categoriesToSeed = [
+      "Men's Apparel",
+      "Mobiles & Gadgets",
+      "Mobiles Accessories",
+      "Home Entertainment",
+      "Babies & Kids",
+      "Home & Living",
+      "Groceries",
+      "Toys, Games & Collectibles",
+      "Women's Bags",
+      "Women Accessories",
+      "Women's Apparel",
+      "Health & Personal Care",
+      "Makeup & Fragrances",
+      "Home Appliances",
+      "Laptops & Computers",
+      "Cameras",
+      "Sports & Travel",
+      "Men's Bags & Accessories",
+      "Men's Shoes",
+      "Motors",
+      "Women's Shoes",
+      "Pet Care",
+      "Audio",
+      "Hobbies & Stationery",
+      "Gaming"
+    ];
+
+    for (const catName of categoriesToSeed) {
+      const catExists = await Category.findOne({ name: catName });
+      if (!catExists) {
+        await Category.create({ name: catName, description: `${catName} category` });
+      }
+    }
+    console.log(`🗂️ Categories database verified and populated.`);
   } catch (error) {
     console.error("❌ MongoDB connection error:", error);
     process.exit(1);
