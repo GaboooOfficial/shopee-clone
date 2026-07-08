@@ -77,6 +77,14 @@ export class AuthService {
       );
   }
 
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(email: string, code: string, newPassword: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/reset-password`, { email, code, newPassword });
+  }
+
   hasRole(roles: string[]): boolean {
     const user = this.currentUserValue;
     if (!user) return false;

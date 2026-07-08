@@ -275,23 +275,45 @@
                   </td>
                   <td class="amount-cell">₱{{ order.totalAmount | number:'1.2-2' }}</td>
                   <td>
+                  <td>
                     <span 
                       class="status-badge" 
-                      [class.status-delivered]="order.status === 'delivered' || order.status === 'shipped'"
-                      [class.status-pending]="order.status === 'pending' || order.status === 'processing'"
-                      [class.status-cancelled]="order.status === 'cancelled'"
+                      [class.status-delivered]="order.status === 'delivered' || order.status === 'package delivered'"
+                      [class.status-pending]="order.status === 'pending' || order.status === 'processing' || order.status === 'shipped' || order.status === 'intransit'"
+                      [class.status-cancelled]="order.status === 'cancelled' || order.status === 'unsuccessful'"
                     >
                       {{ order.status }}
                     </span>
+                    <button 
+                      (click)="viewTracking(order)" 
+                      class="btn btn-secondary btn-xs" 
+                      style="margin-top: 8px; font-size: 11px; padding: 2px 6px; display: block; width: 100%; border-color: #ddd;"
+                    >
+                      🔍 Track History
+                    </button>
                   </td>
                   <td>
-                    <select [ngModel]="order.status" (ngModelChange)="updateOrderStatus(order._id, $event)" class="form-control status-select">
-                      <option value="pending">Pending</option>
-                      <option value="processing">Processing</option>
-                      <option value="shipped">Shipped</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                      <button 
+                        *ngIf="order.status === 'pending'" 
+                        (click)="updateOrderStatus(order._id, 'processing', 'Store owner confirmed order. Preparing package.')" 
+                        class="btn btn-primary btn-xs"
+                        style="background-color: #ee4d2d; color: white; border: none;"
+                      >
+                        Confirm Order
+                      </button>
+                      <button 
+                        *ngIf="order.status === 'processing'" 
+                        (click)="updateOrderStatus(order._id, 'shipped', 'Store owner shipped package. Handed over to logistics.')" 
+                        class="btn btn-primary btn-xs"
+                        style="background-color: #0055aa; color: white; border: none;"
+                      >
+                        Ship Order
+                      </button>
+                      <span *ngIf="order.status !== 'pending' && order.status !== 'processing'" style="font-size: 12px; color: #888; text-align: center;">
+                        Ready for Courier
+                      </span>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -426,4 +448,36 @@
     </div>
   </div>
 </footer>
+
+<!-- Order Tracking Timeline Modal overlay -->
+<div *ngIf="trackingModalOrder" class="tracking-modal-backdrop">
+  <div class="tracking-modal-card">
+    <div class="tracking-modal-header">
+      <h3 style="margin: 0;">📦 Order Tracking History</h3>
+      <button (click)="closeTrackingModal()" class="btn-close">&times;</button>
+    </div>
+    
+    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Order ID: <strong>{{ trackingModalOrder._id }}</strong></p>
+    
+    <div class="tracking-timeline">
+      <div *ngIf="!trackingModalOrder.trackingHistory || trackingModalOrder.trackingHistory.length === 0" style="text-align: center; color: #888; padding: 20px;">
+        No tracking records available.
+      </div>
+      
+      <div *ngFor="let log of trackingModalOrder.trackingHistory; let last = last" class="timeline-item" [class.timeline-active]="last">
+        <div class="timeline-icon" [class.timeline-icon-active]="last">📍</div>
+        <div class="timeline-content">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+            <strong class="timeline-status" style="color: #ee4d2d;">{{ log.status | uppercase }}</strong>
+            <small class="timeline-time" style="color: #999;">{{ log.createdAt | date:'medium' }}</small>
+          </div>
+          <div class="timeline-by" style="font-size: 11px; color: #777;">
+            Updated by: <span class="badge-role" style="background-color: #eee; padding: 2px 6px; border-radius: 2px;">{{ log.updatedBy | uppercase }}</span>
+          </div>
+          <p class="timeline-notes" style="margin: 6px 0 0 0; font-size: 12.5px; color: #444;">{{ log.notes }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 

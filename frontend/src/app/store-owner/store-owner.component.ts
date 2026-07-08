@@ -247,13 +247,27 @@ export class StoreOwnerComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateOrderStatus(orderId: string, newStatus: string) {
-    this.http.patch<any>(`${this.baseUrl}/orders/${orderId}/status`, { status: newStatus }, { headers: this.authService.getAuthHeaders() }).subscribe({
+  trackingModalOrder: any = null;
+
+  viewTracking(order: any) {
+    this.trackingModalOrder = order;
+  }
+
+  closeTrackingModal() {
+    this.trackingModalOrder = null;
+  }
+
+  updateOrderStatus(orderId: string, newStatus: string, notes: string = '') {
+    this.http.patch<any>(`${this.baseUrl}/orders/${orderId}/status`, { status: newStatus, notes }, { headers: this.authService.getAuthHeaders() }).subscribe({
       next: (res) => {
         if (res.success) {
           this.successMessage = `Order status updated to ${newStatus}`;
           this.loadOrders();
           this.clearMessages();
+          if (this.trackingModalOrder && this.trackingModalOrder._id === orderId) {
+            // Re-fetch or update local modal reference
+            this.trackingModalOrder = res.data;
+          }
         }
       },
       error: (err) => this.errorMessage = err.error?.message || 'Failed to update order status'

@@ -226,6 +226,13 @@
                     💬 Chat
                   </button>
                 </div>
+                <button
+                  (click)="viewProductReviews(prod)"
+                  class="btn btn-secondary btn-xs"
+                  style="width: 100%; margin-top: 5px; font-size: 11px; padding: 3px 6px; border-color: #ddd;"
+                >
+                  ⭐ View Customer Reviews
+                </button>
               </div>
             </div>
 
@@ -393,9 +400,17 @@
                   </td>
                   <td>
                     <ul class="order-products-list">
-                      <li *ngFor="let item of order.items">
+                      <li *ngFor="let item of order.items" style="margin-bottom: 8px;">
                         - {{ item.productId?.name }} (Qty: {{ item.quantity }} x
                         ₱{{ item.price | number: "1.2-2" }})
+                        <button
+                          *ngIf="order.status === 'delivered' || order.status === 'package delivered'"
+                          (click)="openReviewModal(item.productId?._id, item.productId?.name, order._id)"
+                          class="btn btn-primary btn-xs"
+                          style="padding: 2px 6px; font-size: 10px; margin-left: 8px; background-color: #26a99e; border: none; color: white;"
+                        >
+                          ⭐ Rate & Review
+                        </button>
                         <br />
                         <small class="store-text"
                           >Store: {{ item.storeId?.name }}</small
@@ -468,16 +483,35 @@
                       class="status-badge"
                       [class.status-delivered]="
                         order.status === 'delivered' ||
-                        order.status === 'shipped'
+                        order.status === 'package delivered'
                       "
                       [class.status-pending]="
                         order.status === 'pending' ||
-                        order.status === 'processing'
+                        order.status === 'processing' ||
+                        order.status === 'shipped' ||
+                        order.status === 'intransit'
                       "
-                      [class.status-cancelled]="order.status === 'cancelled'"
+                      [class.status-cancelled]="
+                        order.status === 'cancelled' ||
+                        order.status === 'unsuccessful'
+                      "
                     >
                       {{ order.status }}
                     </span>
+                    <button
+                      (click)="viewTracking(order)"
+                      class="btn btn-secondary btn-xs"
+                      style="
+                        font-size: 11px;
+                        padding: 3px 6px;
+                        width: 100%;
+                        display: block;
+                        margin-top: 8px;
+                        border-color: #ddd;
+                      "
+                    >
+                      🔍 Track History
+                    </button>
                     <div
                       *ngIf="
                         order.status === 'pending' ||
@@ -706,3 +740,110 @@
     </div>
   </div>
 </footer>
+
+<!-- Order Tracking timeline modal -->
+<div *ngIf="trackingModalOrder" class="tracking-modal-backdrop">
+  <div class="tracking-modal-card">
+    <div class="tracking-modal-header">
+      <h3 style="margin: 0;">📦 Shipment Tracking Details</h3>
+      <button (click)="closeTrackingModal()" class="btn-close">&times;</button>
+    </div>
+    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Order ID: <strong>{{ trackingModalOrder._id }}</strong></p>
+    <div class="tracking-timeline">
+      <div *ngIf="!trackingModalOrder.trackingHistory || trackingModalOrder.trackingHistory.length === 0" style="text-align: center; color: #888; padding: 20px;">
+        No tracking history available yet.
+      </div>
+      <div *ngFor="let log of trackingModalOrder.trackingHistory; let last = last" class="timeline-item" [class.timeline-active]="last">
+        <div class="timeline-icon" [class.timeline-icon-active]="last">📍</div>
+        <div class="timeline-content">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+            <strong class="timeline-status" style="color: #ee4d2d;">{{ log.status | uppercase }}</strong>
+            <small class="timeline-time" style="color: #999;">{{ log.createdAt | date:'medium' }}</small>
+          </div>
+          <div class="timeline-by" style="font-size: 11px; color: #777;">
+            Updated by: <span class="badge-role" style="background-color: #eee; padding: 2px 6px; border-radius: 2px;">{{ log.updatedBy | uppercase }}</span>
+          </div>
+          <p class="timeline-notes" style="margin: 6px 0 0 0; font-size: 12.5px; color: #444;">{{ log.notes }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Write Review Modal -->
+<div *ngIf="reviewModalOpen" class="tracking-modal-backdrop">
+  <div class="tracking-modal-card" style="max-width: 450px;">
+    <div class="tracking-modal-header">
+      <h3 style="margin: 0;">✍️ Write Product Review</h3>
+      <button (click)="closeReviewModal()" class="btn-close">&times;</button>
+    </div>
+    
+    <p style="font-size: 14px; color: #333; margin-bottom: 15px;">Reviewing: <strong>{{ reviewProductName }}</strong></p>
+    
+    <form (ngSubmit)="submitReview()" class="shopee-form">
+      <div class="form-group" style="margin-bottom: 15px;">
+        <label style="font-weight: 500; font-size: 13.5px; color: #555; display: block; margin-bottom: 6px;">Your Rating:</label>
+        <select [(ngModel)]="reviewForm.rating" name="reviewRating" class="form-control">
+          <option [value]="5">⭐⭐⭐⭐⭐ (5 - Excellent)</option>
+          <option [value]="4">⭐⭐⭐⭐☆ (4 - Good)</option>
+          <option [value]="3">⭐⭐⭐☆☆ (3 - Average)</option>
+          <option [value]="2">⭐⭐☆☆☆ (2 - Poor)</option>
+          <option [value]="1">⭐☆☆☆☆ (1 - Very Poor)</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label for="review-text" style="font-weight: 500; font-size: 13.5px; color: #555; display: block; margin-bottom: 6px;">Your Feedback:</label>
+        <textarea
+          id="review-text"
+          [(ngModel)]="reviewForm.reviewText"
+          name="reviewText"
+          class="form-control"
+          rows="4"
+          placeholder="Share your thoughts on the product quality, shipping experience, etc..."
+          required
+          style="width: 100%; height: auto; min-height: 80px;"
+        ></textarea>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="submit" [disabled]="!reviewForm.reviewText.trim()" class="btn btn-primary" style="flex: 1; height: 38px; font-weight: 500; border: none; background-color: #ee4d2d; color: white;">Submit Review</button>
+        <button type="button" (click)="closeReviewModal()" class="btn btn-secondary" style="flex: 1; height: 38px; border-color: #ddd;">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Product Reviews Viewer Modal -->
+<div *ngIf="selectedProductForReviews" class="tracking-modal-backdrop">
+  <div class="tracking-modal-card" style="max-width: 550px;">
+    <div class="tracking-modal-header">
+      <h3 style="margin: 0;">⭐ Product Reviews</h3>
+      <button (click)="closeProductReviews()" class="btn-close">&times;</button>
+    </div>
+    
+    <p style="font-size: 14.5px; color: #333; margin-bottom: 18px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
+      Showing customer reviews for: <strong>{{ selectedProductForReviews.name }}</strong>
+    </p>
+
+    <div style="max-height: 50vh; overflow-y: auto; padding-right: 5px;">
+      <div *ngIf="selectedProductReviews.length === 0" style="text-align: center; color: #888; padding: 30px;">
+        No reviews left for this product yet.
+      </div>
+      
+      <div *ngFor="let rev of selectedProductReviews" style="border-bottom: 1px solid #f2f2f2; padding: 12px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div>
+            <span style="font-size: 13.5px; font-weight: 600; color: #444;">{{ rev.customerId?.profile?.name || rev.customerId?.email }}</span>
+            <small style="color: #999; margin-left: 10px;">{{ rev.createdAt | date:'shortDate' }}</small>
+          </div>
+          <!-- Stars -->
+          <div style="color: #ff9900; font-size: 12px;">
+            <span *ngFor="let star of getStarRatingArray(rev.rating)">{{ star ? '★' : '☆' }}</span>
+          </div>
+        </div>
+        <p style="margin: 0; font-size: 13px; color: #555; line-height: 1.4;">{{ rev.reviewText }}</p>
+      </div>
+    </div>
+  </div>
+</div>

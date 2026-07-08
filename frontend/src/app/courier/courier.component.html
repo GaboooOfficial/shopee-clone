@@ -1,0 +1,235 @@
+<div class="header-wrapper">
+  <!-- Top Utility Bar -->
+  <div class="utility-bar">
+    <div class="container utility-content">
+      <div class="utility-left">
+        <a href="#" class="util-link">Courier Center</a>
+      </div>
+      <div class="utility-right">
+        <span class="user-greeting">👤 logged in: <strong>{{ courierEmail }}</strong></span>
+        <span class="util-divider">|</span>
+        <button (click)="logout()" class="util-btn-logout">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <header class="main-header">
+    <div class="container header-content">
+      <div class="header-brand" style="display: flex; align-items: center; gap: 10px;">
+        <img
+          src="assets/shopee_logo.png"
+          alt="Shopee Logo"
+          style="height: 78px; object-fit: contain"
+        />
+        <span class="header-title">Delivery Portal</span>
+      </div>
+    </div>
+  </header>
+</div>
+
+<!-- Main Split Layout -->
+<div class="body-wrapper">
+  <div class="container main-content-wrapper">
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar-panel">
+      <h3 class="sidebar-title">Courier Hub</h3>
+      <ul class="sidebar-menu">
+        <li
+          [class.active]="activeTab === 'deliveries'"
+          (click)="activeTab = 'deliveries'"
+          class="menu-item"
+        >
+          Delivery Jobs
+          <span class="active-indicator"></span>
+        </li>
+        <li
+          [class.active]="activeTab === 'account'"
+          (click)="activeTab = 'account'"
+          class="menu-item"
+        >
+          My Account
+          <span class="active-indicator"></span>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Right Main Content Panel -->
+    <main class="content-pane">
+      <!-- Alerts -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+
+      <!-- 1. DELIVERIES TAB -->
+      <div *ngIf="activeTab === 'deliveries'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">Delivery Jobs Board</h2>
+          <p class="pane-subtitle">
+            Manage your shipment updates, log packages in transit, and confirm successful deliveries.
+          </p>
+        </div>
+
+        <!-- Quick Stats Grid -->
+        <div class="grid grid-4" style="margin-bottom: 25px;">
+          <div class="card stat-card border-left-primary">
+            <div class="stat-content">
+              <span class="stat-label">Active Delivery Jobs</span>
+              <span class="stat-value">{{ stats.totalJobs }}</span>
+            </div>
+            <span class="stat-icon">📦</span>
+          </div>
+          <div class="card stat-card border-left-info">
+            <div class="stat-content">
+              <span class="stat-label">In Transit</span>
+              <span class="stat-value text-info">{{ stats.transitJobs }}</span>
+            </div>
+            <span class="stat-icon">🚚</span>
+          </div>
+          <div class="card stat-card border-left-success">
+            <div class="stat-content">
+              <span class="stat-label">Delivered Successfully</span>
+              <span class="stat-value text-success">{{ stats.deliveredJobs }}</span>
+            </div>
+            <span class="stat-icon">✅</span>
+          </div>
+          <div class="card stat-card border-left-danger">
+            <div class="stat-content">
+              <span class="stat-label">Unsuccessful Runs</span>
+              <span class="stat-value text-danger">{{ stats.failedJobs }}</span>
+            </div>
+            <span class="stat-icon">⚠️</span>
+          </div>
+        </div>
+
+        <!-- Active Jobs Table -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0;">Pending Deliveries</h3>
+            <button (click)="loadPendingDeliveries()" class="btn btn-secondary btn-xs">🔄 Refresh List</button>
+          </div>
+
+          <div *ngIf="pendingDeliveries.length === 0" class="empty-state">
+            No pending delivery jobs assigned or available at the moment.
+          </div>
+
+          <div class="table-container" *ngIf="pendingDeliveries.length > 0">
+            <table class="shopee-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Store / Shipper</th>
+                  <th>Customer & Destination</th>
+                  <th>Status</th>
+                  <th>Fulfillment Tracking Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let order of pendingDeliveries">
+                  <td class="order-id-cell">{{ order._id }}</td>
+                  <td>
+                    <div *ngFor="let item of order.items" style="margin-bottom: 5px;">
+                      🏪 <strong>{{ item.storeId?.name }}</strong>
+                    </div>
+                  </td>
+                  <td>
+                    <div>👤 <strong>{{ order.customerId?.profile?.name || order.customerId?.email }}</strong></div>
+                    <div style="font-size: 12px; color: #555; margin-top: 4px;">📍 Address: <em>{{ order.shippingAddress }}</em></div>
+                  </td>
+                  <td>
+                    <span
+                      class="status-badge"
+                      [class.status-delivered]="order.status === 'package delivered' || order.status === 'delivered'"
+                      [class.status-pending]="order.status === 'processing' || order.status === 'shipped'"
+                      [class.status-cancelled]="order.status === 'unsuccessful'"
+                    >
+                      {{ order.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <!-- Actions -->
+                    <button
+                      (click)="openUpdateModal(order)"
+                      class="btn btn-primary btn-xs"
+                      style="width: 100%; display: block; font-weight: 500;"
+                    >
+                      Update Tracking Status
+                    </button>
+
+                    <!-- Embedded status form drawer/panel per item -->
+                    <div *ngIf="selectedOrderIdForUpdate === order._id" class="status-drawer">
+                      <form (ngSubmit)="updateDeliveryStatus()" class="drawer-form">
+                        <div class="form-group">
+                          <label style="font-size: 11px; font-weight: bold; color: #555;">Choose status:</label>
+                          <select [(ngModel)]="statusUpdateForm.status" name="statusUpdate" class="form-control" style="padding: 4px; font-size: 12px; height: 30px; margin-top: 3px;">
+                            <option value="intransit">🚚 In Transit</option>
+                            <option value="package delivered">✅ Package Delivered</option>
+                            <option value="unsuccessful">⚠️ Unsuccessful Run</option>
+                          </select>
+                        </div>
+                        <div class="form-group" style="margin-top: 8px;">
+                          <input type="text" [(ngModel)]="statusUpdateForm.notes" name="notesUpdate" class="form-control" placeholder="Optional delivery notes (e.g. front desk)" style="padding: 4px 8px; font-size: 12px; height: 30px;" />
+                        </div>
+                        <div style="display: flex; gap: 5px; margin-top: 10px;">
+                          <button type="submit" class="btn btn-primary btn-xs" style="flex: 1; padding: 4px 0;">Save</button>
+                          <button type="button" (click)="closeUpdateModal()" class="btn btn-secondary btn-xs" style="flex: 1; padding: 4px 0;">Cancel</button>
+                        </div>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. MY ACCOUNT TAB -->
+      <div *ngIf="activeTab === 'account'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">Courier Profile Settings</h2>
+          <p class="pane-subtitle">Manage and update your driver/fulfillment account details.</p>
+        </div>
+
+        <div class="card">
+          <h3>Profile Details</h3>
+          <form (ngSubmit)="updateProfile()" class="shopee-form">
+            <div class="form-group">
+              <label for="profile-name">Full Name</label>
+              <input
+                type="text"
+                id="profile-name"
+                name="profName"
+                class="form-control"
+                placeholder="Driver Name"
+                [(ngModel)]="profileForm.name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="profile-phone">Contact Number</label>
+              <input
+                type="text"
+                id="profile-phone"
+                name="profPhone"
+                class="form-control"
+                placeholder="Mobile number"
+                [(ngModel)]="profileForm.phone"
+              />
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              style="margin-top: 15px"
+            >
+              Save Profile Info
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

@@ -30,6 +30,14 @@ export class AuthComponent implements OnInit {
     },
   };
 
+  // Forgot password form fields
+  showForgotForm = false;
+  resetCodeSent = false;
+  forgotEmail = '';
+  resetCode = '';
+  newPassword = '';
+  simulatedCode = '';
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -44,8 +52,60 @@ export class AuthComponent implements OnInit {
 
   setTab(isLogin: boolean) {
     this.isLoginTab = isLogin;
+    this.showForgotForm = false;
     this.errorMessage = '';
     this.successMessage = '';
+  }
+
+  onRequestResetCode() {
+    if (!this.forgotEmail.trim()) return;
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.authService.forgotPassword(this.forgotEmail).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res.success) {
+          this.resetCodeSent = true;
+          this.successMessage = 'Verification code sent to your email!';
+        } else {
+          this.errorMessage = res.message || 'Failed to request code';
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.message || 'Failed to request reset code';
+      }
+    });
+  }
+
+  onResetPassword() {
+    if (!this.forgotEmail || !this.resetCode || !this.newPassword) return;
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.authService.resetPassword(this.forgotEmail, this.resetCode, this.newPassword).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res.success) {
+          this.successMessage = 'Password reset successfully! You can now log in.';
+          this.showForgotForm = false;
+          this.isLoginTab = true;
+          this.resetCodeSent = false;
+          this.forgotEmail = '';
+          this.resetCode = '';
+          this.newPassword = '';
+        } else {
+          this.errorMessage = res.message || 'Failed to reset password';
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.message || 'Failed to reset password';
+      }
+    });
   }
 
   onLogin() {
@@ -114,6 +174,8 @@ export class AuthComponent implements OnInit {
       this.router.navigate(['/admin']);
     } else if (user.role === 'store_owner') {
       this.router.navigate(['/store-owner']);
+    } else if (user.role === 'courier') {
+      this.router.navigate(['/courier']);
     } else {
       this.router.navigate(['/customer']);
     }

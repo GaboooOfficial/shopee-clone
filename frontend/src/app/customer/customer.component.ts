@@ -41,6 +41,23 @@ export class CustomerComponent implements OnInit, OnDestroy {
   newOrderAddressText = '';
   private socket: WebSocket | null = null;
 
+  // Order tracking modal
+  trackingModalOrder: any = null;
+
+  // Review modal variables
+  reviewModalOpen = false;
+  reviewProductName = '';
+  reviewForm = {
+    productId: '',
+    orderId: '',
+    rating: 5,
+    reviewText: ''
+  };
+
+  // Product reviews drawer
+  selectedProductForReviews: any = null;
+  selectedProductReviews: any[] = [];
+
   private baseUrl = 'http://localhost:3000/api';
 
   constructor(
@@ -516,5 +533,77 @@ export class CustomerComponent implements OnInit, OnDestroy {
       return 'assets/' + trimmed;
     }
     return 'assets/shopee_logo.png';
+  }
+
+  // --- ORDER TRACKING TIMELINE ---
+  viewTracking(order: any) {
+    this.trackingModalOrder = order;
+  }
+
+  closeTrackingModal() {
+    this.trackingModalOrder = null;
+  }
+
+  // --- PRODUCT REVIEWS & RATINGS ---
+  openReviewModal(productId: string, productName: string, orderId: string) {
+    this.reviewProductName = productName;
+    this.reviewForm = {
+      productId,
+      orderId,
+      rating: 5,
+      reviewText: ''
+    };
+    this.reviewModalOpen = true;
+  }
+
+  closeReviewModal() {
+    this.reviewModalOpen = false;
+  }
+
+  submitReview() {
+    if (!this.reviewForm.productId || !this.reviewForm.orderId || !this.reviewForm.reviewText.trim()) return;
+
+    this.http.post<any>(`${this.baseUrl}/reviews`, this.reviewForm, { headers: this.authService.getAuthHeaders() }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.successMessage = 'Review submitted successfully! Thank you for your feedback.';
+          this.closeReviewModal();
+          this.loadPurchaseHistory();
+          this.clearMessages();
+        }
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to submit review';
+        this.clearMessages();
+      }
+    });
+  }
+
+  viewProductReviews(product: any) {
+    this.selectedProductForReviews = product;
+    this.selectedProductReviews = [];
+    this.http.get<any>(`${this.baseUrl}/reviews/product/${product._id}`).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.selectedProductReviews = res.data;
+        }
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to load product reviews';
+        this.clearMessages();
+      }
+    });
+  }
+
+  closeProductReviews() {
+    this.selectedProductForReviews = null;
+  }
+
+  getStarRatingArray(rating: number): any[] {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(i <= rating);
+    }
+    return stars;
   }
 }

@@ -1017,3 +1017,115 @@
   color: #999;
   font-size: 13px;
 }
+
+/* Tracking Modal Overlay styles */
+.tracking-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.tracking-modal-card {
+  background-color: #fff;
+  border-radius: 4px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  padding: 25px;
+  box-sizing: border-box;
+}
+
+.tracking-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #888;
+}
+
+.btn-close:hover {
+  color: #333;
+}
+
+/* Timeline display */
+.tracking-timeline {
+  position: relative;
+  padding-left: 25px;
+  margin-top: 15px;
+}
+
+.tracking-timeline::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background-color: #e8e8e8;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.timeline-icon {
+  position: absolute;
+  left: -26px;
+  top: 2px;
+  font-size: 10px;
+  color: #ddd;
+  background-color: #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-icon-active {
+  color: #ee4d2d;
+}
+
+.timeline-content {
+  background-color: #fcfcfc;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 10px 14px;
+}
+
+.timeline-status {
+  font-size: 12.5px;
+}
+
+.timeline-time {
+  font-size: 11px;
+}
+
+.timeline-by {
+  font-size: 11px;
+}
+
+.timeline-notes {
+  font-size: 12px;
+}
+
