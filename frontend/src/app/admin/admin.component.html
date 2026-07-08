@@ -189,20 +189,27 @@
                       class="status-badge"
                       [class.status-delivered]="
                         order.status === 'delivered' ||
-                        order.status === 'shipped'
+                        order.status === 'package delivered'
                       "
                       [class.status-pending]="
                         order.status === 'pending' ||
-                        order.status === 'processing'
+                        order.status === 'processing' ||
+                        order.status === 'shipped' ||
+                        order.status === 'intransit'
                       "
-                      [class.status-cancelled]="order.status === 'cancelled'"
+                      [class.status-cancelled]="
+                        order.status === 'cancelled' ||
+                        order.status === 'unsuccessful'
+                      "
                     >
                       {{
-                        order.status === "delivered"
-                          ? "Delivered"
-                          : order.status === "cancelled"
-                            ? "Cancelled"
-                            : "Preparing"
+                        order.status === 'delivered' || order.status === 'package delivered'
+                          ? 'Delivered'
+                          : order.status === 'cancelled' || order.status === 'unsuccessful'
+                            ? 'Cancelled'
+                            : order.status === 'intransit'
+                              ? 'In Transit'
+                              : 'Preparing'
                       }}
                     </span>
                   </td>
@@ -269,14 +276,37 @@
                 <tr>
                   <th>Name</th>
                   <th>Description</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let cat of categories">
-                  <td>
-                    <strong>{{ cat.name }}</strong>
-                  </td>
-                  <td>{{ cat.description }}</td>
+                  <ng-container *ngIf="editingCategoryId !== cat._id">
+                    <td>
+                      <strong>{{ cat.name }}</strong>
+                    </td>
+                    <td>{{ cat.description }}</td>
+                    <td>
+                      <div class="action-buttons" style="display: flex; gap: 5px;">
+                        <button (click)="startEditCategory(cat)" class="btn btn-secondary btn-xs">Edit</button>
+                        <button (click)="deleteCategory(cat._id)" class="btn btn-danger btn-xs">Delete</button>
+                      </div>
+                    </td>
+                  </ng-container>
+                  <ng-container *ngIf="editingCategoryId === cat._id">
+                    <td>
+                      <input type="text" [(ngModel)]="editCategoryForm.name" class="form-control" style="font-size: 12px; padding: 4px; height: 30px;" />
+                    </td>
+                    <td>
+                      <input type="text" [(ngModel)]="editCategoryForm.description" class="form-control" style="font-size: 12px; padding: 4px; height: 30px;" />
+                    </td>
+                    <td>
+                      <div class="action-buttons" style="display: flex; gap: 5px;">
+                        <button (click)="updateCategory(cat._id)" class="btn btn-success btn-xs" style="background-color: #2eb82e; color: white; border: none;">Save</button>
+                        <button (click)="cancelEditCategory()" class="btn btn-secondary btn-xs">Cancel</button>
+                      </div>
+                    </td>
+                  </ng-container>
                 </tr>
               </tbody>
             </table>

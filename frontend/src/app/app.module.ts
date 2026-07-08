@@ -3,35 +3,33 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthComponent } from './auth/auth.component';
-import { AdminComponent } from './admin/admin.component';
-import { StoreOwnerComponent } from './store-owner/store-owner.component';
-import { CustomerComponent } from './customer/customer.component';
-import { CourierComponent } from './courier/courier.component';
-import { MapComponent } from './map/map.component';
 
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { authReducer } from './store/auth/auth.reducer';
+import { cartReducer } from './store/cart/cart.reducer';
+import { productsReducer } from './store/products/products.reducer';
+import { ordersReducer } from './store/orders/orders.reducer';
+import { ProductsEffects } from './store/products/products.effects';
+import { OrdersEffects } from './store/orders/orders.effects';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AuthComponent,
-    AdminComponent,
-    StoreOwnerComponent,
-    CustomerComponent,
-    CourierComponent,
-    MapComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule,
-    StoreModule.forRoot({ auth: authReducer }),
+    StoreModule.forRoot({
+      auth: authReducer,
+      cart: cartReducer,
+      products: productsReducer,
+      orders: ordersReducer
+    }),
+    EffectsModule.forRoot([ProductsEffects, OrdersEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       logOnly: false,
@@ -41,3 +39,5 @@ import { authReducer } from './store/auth/auth.reducer';
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+
+

@@ -2,6 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
+import { Store } from '@ngrx/store';
+import * as ProductsActions from '../store/products/products.actions';
+import { selectMyStoreProducts } from '../store/products/products.selectors';
+import * as OrdersActions from '../store/orders/orders.actions';
+import { selectStoreOrders } from '../store/orders/orders.selectors';
 
 @Component({
   selector: 'app-store-owner',
@@ -60,7 +65,8 @@ export class StoreOwnerComponent implements OnInit, OnDestroy {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private store: Store
   ) {}
 
   ngOnInit(): void {
@@ -70,6 +76,9 @@ export class StoreOwnerComponent implements OnInit, OnDestroy {
       this.currentUserId = user._id || user.id || '';
       this.initWebSocket();
     }
+    this.store.select(selectMyStoreProducts).subscribe(products => this.products = products);
+    this.store.select(selectStoreOrders).subscribe(orders => this.orders = orders);
+
     this.loadMyStore();
     this.loadCategories();
   }
@@ -151,12 +160,7 @@ export class StoreOwnerComponent implements OnInit, OnDestroy {
 
   // --- PRODUCTS ACTIONS ---
   loadProducts() {
-    this.http.get<any>(`${this.baseUrl}/products/my-store`, { headers: this.authService.getAuthHeaders() }).subscribe({
-      next: (res) => {
-        if (res.success) this.products = res.data;
-      },
-      error: (err) => this.errorMessage = err.error?.message || 'Failed to load products'
-    });
+    this.store.dispatch(ProductsActions.loadMyStoreProducts());
   }
 
   saveProduct() {
@@ -239,12 +243,7 @@ export class StoreOwnerComponent implements OnInit, OnDestroy {
 
   // --- ORDERS ACTIONS ---
   loadOrders() {
-    this.http.get<any>(`${this.baseUrl}/orders/store-orders`, { headers: this.authService.getAuthHeaders() }).subscribe({
-      next: (res) => {
-        if (res.success) this.orders = res.data;
-      },
-      error: (err) => this.errorMessage = err.error?.message || 'Failed to load store orders'
-    });
+    this.store.dispatch(OrdersActions.loadStoreOrders());
   }
 
   trackingModalOrder: any = null;
@@ -291,6 +290,24 @@ export class StoreOwnerComponent implements OnInit, OnDestroy {
       },
       error: (err) => this.errorMessage = err.error?.message || 'Failed to update store settings'
     });
+  }
+
+  deleteStore() {
+    if (!this.myStore) return;
+    if (confirm('WARNING: Are you sure you want to permanently delete your store? This will also delete ALL your product listings!')) {
+      this.http.delete<any>(`${this.baseUrl}/stores/${this.myStore._id}`, { headers: this.authService.getAuthHeaders() }).subscribe({
+        next: (res) => {
+          if (res.success) {
+            alert('Your store has been deleted successfully.');
+            this.myStore = null;
+          }
+        },
+        error: (err) => {
+          this.errorMessage = err.error?.message || 'Failed to delete store';
+          this.clearMessages();
+        }
+      });
+    }
   }
 
   // --- MESSAGING ACTIONS ---

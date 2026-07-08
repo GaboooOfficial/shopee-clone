@@ -350,6 +350,14 @@
 
             <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Save Settings</button>
           </form>
+
+          <hr style="margin: 30px 0; border: none; border-top: 1px dashed #ffa39e;" />
+
+          <div class="danger-zone" style="background-color: #fff1f0; border: 1px solid #ffa39e; padding: 20px; border-radius: 8px; margin-top: 20px;">
+            <h4 style="color: #cf1322; margin-top: 0; margin-bottom: 8px;">⚠️ Danger Zone</h4>
+            <p style="font-size: 13px; color: #555; margin-bottom: 15px;">Permanently delete your seller store. This will remove your store profile and delete all your product listings from the marketplace. This action is irreversible.</p>
+            <button type="button" (click)="deleteStore()" class="btn btn-danger" style="background-color: #ff4d4f; border-color: #ff4d4f; color: white; font-weight: 600; padding: 8px 16px;">Delete Store</button>
+          </div>
         </div>
 
         <!-- CUSTOMER CHATS TAB -->

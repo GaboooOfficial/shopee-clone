@@ -2,6 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
+import { Store } from '@ngrx/store';
+import * as CartActions from '../store/cart/cart.actions';
+import { selectCartItems } from '../store/cart/cart.selectors';
+import * as ProductsActions from '../store/products/products.actions';
+import { selectProducts } from '../store/products/products.selectors';
+import * as OrdersActions from '../store/orders/orders.actions';
+import { selectCustomerOrders } from '../store/orders/orders.selectors';
 
 @Component({
   selector: 'app-customer',
@@ -64,6 +71,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private authService: AuthService,
     private router: Router,
+    private store: Store,
   ) {}
 
   ngOnInit(): void {
@@ -77,6 +85,10 @@ export class CustomerComponent implements OnInit, OnDestroy {
       };
       this.initWebSocket();
     }
+    this.store.select(selectCartItems).subscribe(items => this.cart = items);
+    this.store.select(selectProducts).subscribe(products => this.products = products);
+    this.store.select(selectCustomerOrders).subscribe(orders => this.orders = orders);
+
     this.loadCategories();
     this.loadStores();
     this.loadProducts();
@@ -118,19 +130,13 @@ export class CustomerComponent implements OnInit, OnDestroy {
   }
 
   loadProducts() {
-    let url = `${this.baseUrl}/products?`;
-    if (this.filters.search) url += `search=${this.filters.search}&`;
-    if (this.filters.categoryId)
-      url += `categoryId=${this.filters.categoryId}&`;
-    if (this.filters.storeId) url += `storeId=${this.filters.storeId}&`;
-
-    this.http.get<any>(url).subscribe({
-      next: (res) => {
-        if (res.success) this.products = res.data;
-      },
-      error: (err) =>
-        (this.errorMessage = err.error?.message || 'Failed to load products'),
-    });
+    this.store.dispatch(
+      ProductsActions.loadProducts({
+        search: this.filters.search,
+        categoryId: this.filters.categoryId,
+        storeId: this.filters.storeId,
+      })
+    );
   }
 
   viewStoreLocation(store: any) {
@@ -139,58 +145,25 @@ export class CustomerComponent implements OnInit, OnDestroy {
 
   // --- CART ACTIONS ---
   loadCartFromStorage() {
-    const savedCart = localStorage.getItem('shopee_cart');
-    if (savedCart) {
-      this.cart = JSON.parse(savedCart);
-    }
+    this.store.dispatch(CartActions.loadCartFromStorage());
   }
 
   saveCartToStorage() {
-    localStorage.setItem('shopee_cart', JSON.stringify(this.cart));
+    // Handled automatically by reducer/localstorage sync
   }
 
   addToCart(product: any) {
-    const existingIndex = this.cart.findIndex(
-      (item) => item.productId === product._id,
-    );
-    if (existingIndex > -1) {
-      if (this.cart[existingIndex].quantity < product.stock) {
-        this.cart[existingIndex].quantity += 1;
-        this.successMessage = `Increased quantity for ${product.name}`;
-      } else {
-        this.errorMessage = `Cannot add more. Only ${product.stock} in stock.`;
-      }
-    } else {
-      this.cart.push({
-        productId: product._id,
-        name: product.name,
-        price: product.price,
-        quantity: 1,
-        stock: product.stock,
-        imageUrl: product.imageUrl,
-        storeName: product.storeId?.name,
-      });
-      this.successMessage = `Added ${product.name} to cart`;
-    }
-    this.saveCartToStorage();
+    this.store.dispatch(CartActions.addToCart({ product }));
+    this.successMessage = `Added ${product.name} to cart`;
     this.clearMessages();
   }
 
-  onCartQuantityChanged(index: number) {
-    const item = this.cart[index];
-    if (item.quantity > item.stock) {
-      item.quantity = item.stock;
-      alert(`Only ${item.stock} items are in stock.`);
-    }
-    if (item.quantity < 1) {
-      item.quantity = 1;
-    }
-    this.saveCartToStorage();
+  onCartQuantityChanged(index: number, newQty: number) {
+    this.store.dispatch(CartActions.updateCartQuantity({ index, quantity: newQty }));
   }
 
   removeFromCart(index: number) {
-    this.cart.splice(index, 1);
-    this.saveCartToStorage();
+    this.store.dispatch(CartActions.removeFromCart({ index }));
   }
 
   getCartItemsCount(): number {
@@ -221,9 +194,8 @@ export class CustomerComponent implements OnInit, OnDestroy {
           if (res.success) {
             this.successMessage =
               'Order checkout completed successfully! Thank you for purchasing.';
-            this.cart = [];
+            this.store.dispatch(CartActions.clearCart());
             this.shippingAddress = '';
-            this.saveCartToStorage();
             this.loadPurchaseHistory();
             this.loadProducts(); // Reload stocks
             this.activeTab = 'orders';
@@ -237,18 +209,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
 
   // --- PURCHASE HISTORY ACTIONS ---
   loadPurchaseHistory() {
-    this.http
-      .get<any>(`${this.baseUrl}/orders/my-orders`, {
-        headers: this.authService.getAuthHeaders(),
-      })
-      .subscribe({
-        next: (res) => {
-          if (res.success) this.orders = res.data;
-        },
-        error: (err) =>
-          (this.errorMessage =
-            err.error?.message || 'Failed to load purchase history'),
-      });
+    this.store.dispatch(OrdersActions.loadCustomerOrders());
   }
 
   // --- MESSAGING ACTIONS ---
@@ -605,5 +566,9 @@ export class CustomerComponent implements OnInit, OnDestroy {
       stars.push(i <= rating);
     }
     return stars;
+  }
+
+  trackByProductId(index: number, item: any): string {
+    return item.productId || item._id || index.toString();
   }
 }

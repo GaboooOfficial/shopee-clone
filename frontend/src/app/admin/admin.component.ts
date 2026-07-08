@@ -32,6 +32,12 @@ export class AdminComponent implements OnInit {
     description: '',
   };
 
+  editingCategoryId: string | null = null;
+  editCategoryForm = {
+    name: '',
+    description: '',
+  };
+
   private baseUrl = 'http://localhost:3000/api';
 
   constructor(
@@ -243,6 +249,59 @@ export class AdminComponent implements OnInit {
           (this.errorMessage =
             err.error?.message || 'Failed to create category'),
       });
+  }
+
+  startEditCategory(cat: any) {
+    this.editingCategoryId = cat._id;
+    this.editCategoryForm = {
+      name: cat.name,
+      description: cat.description || '',
+    };
+  }
+
+  cancelEditCategory() {
+    this.editingCategoryId = null;
+  }
+
+  updateCategory(catId: string) {
+    this.http
+      .put<any>(
+        `${this.baseUrl}/categories/${catId}`,
+        this.editCategoryForm,
+        { headers: this.authService.getAuthHeaders() }
+      )
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.successMessage = 'Category updated successfully!';
+            this.cancelEditCategory();
+            this.loadCategories();
+            this.clearMessages();
+          }
+        },
+        error: (err) =>
+          (this.errorMessage = err.error?.message || 'Failed to update category'),
+      });
+  }
+
+  deleteCategory(catId: string) {
+    if (confirm('Are you sure you want to delete this category?')) {
+      this.http
+        .delete<any>(`${this.baseUrl}/categories/${catId}`, {
+          headers: this.authService.getAuthHeaders(),
+        })
+        .subscribe({
+          next: (res) => {
+            if (res.success) {
+              this.successMessage = 'Category deleted successfully!';
+              this.loadCategories();
+              this.clearMessages();
+            }
+          },
+          error: (err) =>
+            (this.errorMessage = err.error?.message || 'Failed to delete category'),
+        });
+    }
   }
 
   getProductImageUrl(url: string): string {

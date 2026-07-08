@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
+import { Store } from '@ngrx/store';
+import * as OrdersActions from '../store/orders/orders.actions';
+import { selectCourierDeliveries } from '../store/orders/orders.selectors';
 
 @Component({
   selector: 'app-courier',
@@ -41,7 +44,8 @@ export class CourierComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private store: Store
   ) {}
 
   ngOnInit(): void {
@@ -54,6 +58,10 @@ export class CourierComponent implements OnInit {
         phone: user.profile?.phone || ''
       };
     }
+    this.store.select(selectCourierDeliveries).subscribe(deliveries => {
+      this.pendingDeliveries = deliveries;
+      this.calculateStats();
+    });
     this.loadPendingDeliveries();
   }
 
@@ -70,15 +78,7 @@ export class CourierComponent implements OnInit {
   }
 
   loadPendingDeliveries() {
-    this.http.get<any>(`${this.baseUrl}/orders/courier/pending`, { headers: this.authService.getAuthHeaders() }).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.pendingDeliveries = res.data;
-          this.calculateStats();
-        }
-      },
-      error: (err) => this.errorMessage = err.error?.message || 'Failed to load delivery jobs'
-    });
+    this.store.dispatch(OrdersActions.loadCourierDeliveries());
   }
 
   calculateStats() {

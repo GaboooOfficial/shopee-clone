@@ -1,35 +1,36 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthComponent } from './auth/auth.component';
-import { AdminComponent } from './admin/admin.component';
-import { StoreOwnerComponent } from './store-owner/store-owner.component';
-import { CustomerComponent } from './customer/customer.component';
-import { CourierComponent } from './courier/courier.component';
 import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
-  { path: 'auth', component: AuthComponent },
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
+  },
   {
     path: 'admin',
-    component: AdminComponent,
+    loadChildren: () => import('./admin/admin.module').then((m) => m.AdminModule),
     canActivate: [AuthGuard],
     data: { roles: ['admin'] },
   },
   {
     path: 'store-owner',
-    component: StoreOwnerComponent,
+    loadChildren: () =>
+      import('./store-owner/store-owner.module').then((m) => m.StoreOwnerModule),
     canActivate: [AuthGuard],
     data: { roles: ['store_owner'] },
   },
   {
     path: 'customer',
-    component: CustomerComponent,
+    loadChildren: () =>
+      import('./customer/customer.module').then((m) => m.CustomerModule),
     canActivate: [AuthGuard],
     data: { roles: ['customer'] },
   },
   {
     path: 'courier',
-    component: CourierComponent,
+    loadChildren: () =>
+      import('./courier/courier.module').then((m) => m.CourierModule),
     canActivate: [AuthGuard],
     data: { roles: ['courier'] },
   },
@@ -42,3 +43,4 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
+
