@@ -67,7 +67,7 @@ export class StoreOwnerComponent implements OnInit, OnDestroy {
     const user = this.authService.currentUserValue;
     if (user) {
       this.sellerEmail = user.email;
-      this.currentUserId = user._id || '';
+      this.currentUserId = user._id || user.id || '';
       this.initWebSocket();
     }
     this.loadMyStore();

@@ -21,16 +21,16 @@ import { authReducer } from './store/auth/auth.reducer';
     AdminComponent,
     StoreOwnerComponent,
     CustomerComponent,
-    MapComponent
+    MapComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    StoreModule.forRoot({ auth: authReducer })
+    StoreModule.forRoot({ auth: authReducer }),
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

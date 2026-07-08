@@ -7,7 +7,7 @@ import * as AuthActions from '../store/auth/auth.actions';
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.css']
+  styleUrls: ['./auth.component.css'],
 })
 export class AuthComponent implements OnInit {
   isLoginTab = true;
@@ -17,7 +17,7 @@ export class AuthComponent implements OnInit {
 
   loginData = {
     email: '',
-    password: ''
+    password: '',
   };
 
   registerData = {
@@ -26,14 +26,14 @@ export class AuthComponent implements OnInit {
     role: 'customer',
     profile: {
       name: '',
-      phone: ''
-    }
+      phone: '',
+    },
   };
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private store: Store
+    private store: Store,
   ) {}
 
   ngOnInit(): void {
@@ -51,7 +51,12 @@ export class AuthComponent implements OnInit {
   onLogin() {
     this.isLoading = true;
     this.errorMessage = '';
-    this.store.dispatch(AuthActions.login({ email: this.loginData.email, password: this.loginData.password }));
+    this.store.dispatch(
+      AuthActions.login({
+        email: this.loginData.email,
+        password: this.loginData.password,
+      }),
+    );
 
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
@@ -62,15 +67,18 @@ export class AuthComponent implements OnInit {
           this.redirectUser(user);
         } else {
           this.errorMessage = response.message;
-          this.store.dispatch(AuthActions.loginFailure({ error: response.message }));
+          this.store.dispatch(
+            AuthActions.loginFailure({ error: response.message }),
+          );
         }
       },
       error: (err) => {
         this.isLoading = false;
-        const msg = err.error?.message || 'Login failed. Please check your credentials.';
+        const msg =
+          err.error?.message || 'Login failed. Please check your credentials.';
         this.errorMessage = msg;
         this.store.dispatch(AuthActions.loginFailure({ error: msg }));
-      }
+      },
     });
   }
 
@@ -83,7 +91,8 @@ export class AuthComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
-          this.successMessage = 'Account created successfully! You can now log in.';
+          this.successMessage =
+            'Account created successfully! You can now log in.';
           this.isLoginTab = true;
           this.loginData.email = this.registerData.email;
           this.loginData.password = '';
@@ -93,8 +102,9 @@ export class AuthComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Registration failed. Email might be in use.';
-      }
+        this.errorMessage =
+          err.error?.message || 'Registration failed. Email might be in use.';
+      },
     });
   }
 

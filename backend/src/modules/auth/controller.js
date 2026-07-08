@@ -62,5 +62,5 @@ module.exports = {
   login,
   getMe,
   updateProfile,
-  deactivateAccount
+  deactivateAccount,
 };

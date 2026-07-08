@@ -1,7 +1,7 @@
 /* Top Utility & Brand Header Styling */
 .header-wrapper {
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
 .utility-bar {
@@ -212,7 +212,7 @@
   border-radius: 4px;
   padding: 15px 0;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .sidebar-title {
@@ -291,7 +291,7 @@
   border: 1px solid #e8e8e8;
   border-radius: 4px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
 }
 
 .card h3 {
@@ -358,12 +358,14 @@
   justify-content: space-between;
   padding: 15px;
   height: 100%;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .product-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .prod-card-top {
@@ -921,7 +923,7 @@
   border-bottom: 1px solid #e8e8e8;
   font-size: 14.5px;
   color: #333;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.01);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.01);
 }
 
 .chat-messages-display {
@@ -955,7 +957,7 @@
   background-color: #fff;
   color: #333;
   border-bottom-left-radius: 2px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   border: 1px solid #eee;
 }
 
@@ -1015,4 +1017,3 @@
   color: #999;
   font-size: 13px;
 }
-

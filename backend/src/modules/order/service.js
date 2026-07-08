@@ -1,12 +1,12 @@
-const Order = require('./model');
-const Product = require('../product/model');
-const Store = require('../store/model');
+const Order = require("./model");
+const Product = require("../product/model");
+const Store = require("../store/model");
 
 const placeOrder = async (customerId, orderData) => {
   const { items, shippingAddress } = orderData;
 
   if (!items || items.length === 0) {
-    const error = new Error('No items in the order');
+    const error = new Error("No items in the order");
     error.statusCode = 400;
     throw error;
   }
@@ -23,7 +23,9 @@ const placeOrder = async (customerId, orderData) => {
     }
 
     if (product.stock < item.quantity) {
-      const error = new Error(`Insufficient stock for product: ${product.name}`);
+      const error = new Error(
+        `Insufficient stock for product: ${product.name}`,
+      );
       error.statusCode = 400;
       throw error;
     }
@@ -37,7 +39,7 @@ const placeOrder = async (customerId, orderData) => {
       productId: product._id,
       storeId: product.storeId,
       quantity: item.quantity,
-      price: product.price
+      price: product.price,
     });
   }
 
@@ -46,7 +48,7 @@ const placeOrder = async (customerId, orderData) => {
     items: processedItems,
     totalAmount,
     shippingAddress,
-    status: 'pending'
+    status: "pending",
   });
 
   return order;
@@ -54,21 +56,21 @@ const placeOrder = async (customerId, orderData) => {
 
 const getCustomerOrders = async (customerId) => {
   return await Order.find({ customerId })
-    .populate('items.productId', 'name imageUrl')
-    .populate('items.storeId', 'name');
+    .populate("items.productId", "name imageUrl")
+    .populate("items.storeId", "name");
 };
 
 const getStoreOrders = async (ownerId) => {
   const store = await Store.findOne({ ownerId });
   if (!store) {
-    const error = new Error('Store not found');
+    const error = new Error("Store not found");
     error.statusCode = 404;
     throw error;
   }
 
-  const orders = await Order.find({ 'items.storeId': store._id })
-    .populate('customerId', 'email profile')
-    .populate('items.productId', 'name imageUrl');
+  const orders = await Order.find({ "items.storeId": store._id })
+    .populate("customerId", "email profile")
+    .populate("items.productId", "name imageUrl");
 
   return orders;
 };
@@ -76,14 +78,17 @@ const getStoreOrders = async (ownerId) => {
 const updateOrderStatus = async (ownerId, orderId, status) => {
   const store = await Store.findOne({ ownerId });
   if (!store) {
-    const error = new Error('Store not found');
+    const error = new Error("Store not found");
     error.statusCode = 404;
     throw error;
   }
 
-  const order = await Order.findOne({ _id: orderId, 'items.storeId': store._id });
+  const order = await Order.findOne({
+    _id: orderId,
+    "items.storeId": store._id,
+  });
   if (!order) {
-    const error = new Error('Order not found or unauthorized');
+    const error = new Error("Order not found or unauthorized");
     error.statusCode = 404;
     throw error;
   }
@@ -96,13 +101,15 @@ const updateOrderStatus = async (ownerId, orderId, status) => {
 const cancelOrder = async (customerId, orderId) => {
   const order = await Order.findOne({ _id: orderId, customerId });
   if (!order) {
-    const error = new Error('Order not found');
+    const error = new Error("Order not found");
     error.statusCode = 404;
     throw error;
   }
 
-  if (order.status !== 'pending' && order.status !== 'processing') {
-    const error = new Error('Order cannot be cancelled because it is already ' + order.status);
+  if (order.status !== "pending" && order.status !== "processing") {
+    const error = new Error(
+      "Order cannot be cancelled because it is already " + order.status,
+    );
     error.statusCode = 400;
     throw error;
   }
@@ -116,27 +123,29 @@ const cancelOrder = async (customerId, orderId) => {
     }
   }
 
-  order.status = 'cancelled';
+  order.status = "cancelled";
   await order.save();
   return order;
 };
 
 const updateShippingAddress = async (customerId, orderId, address) => {
   if (!address || !address.trim()) {
-    const error = new Error('Address is required');
+    const error = new Error("Address is required");
     error.statusCode = 400;
     throw error;
   }
 
   const order = await Order.findOne({ _id: orderId, customerId });
   if (!order) {
-    const error = new Error('Order not found');
+    const error = new Error("Order not found");
     error.statusCode = 404;
     throw error;
   }
 
-  if (order.status !== 'pending') {
-    const error = new Error('Shipping address can only be changed while the order is pending');
+  if (order.status !== "pending") {
+    const error = new Error(
+      "Shipping address can only be changed while the order is pending",
+    );
     error.statusCode = 400;
     throw error;
   }
@@ -152,5 +161,5 @@ module.exports = {
   getStoreOrders,
   updateOrderStatus,
   cancelOrder,
-  updateShippingAddress
+  updateShippingAddress,
 };

@@ -59,13 +59,16 @@ const connectDB = async () => {
       "Pet Care",
       "Audio",
       "Hobbies & Stationery",
-      "Gaming"
+      "Gaming",
     ];
 
     for (const catName of categoriesToSeed) {
       const catExists = await Category.findOne({ name: catName });
       if (!catExists) {
-        await Category.create({ name: catName, description: `${catName} category` });
+        await Category.create({
+          name: catName,
+          description: `${catName} category`,
+        });
       }
     }
     console.log(`🗂️ Categories database verified and populated.`);

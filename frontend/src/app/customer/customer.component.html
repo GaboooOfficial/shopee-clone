@@ -21,18 +21,26 @@
   <!-- Orange Brand Header (Styled white in CSS) -->
   <header class="main-header">
     <div class="container header-content">
-      <div class="header-brand" style="display: flex; align-items: center; gap: 10px;">
+      <div
+        class="header-brand"
+        style="display: flex; align-items: center; gap: 10px"
+      >
         <img
           src="assets/shopee_logo.png"
           alt="Shopee Logo"
-          style="height: 78px; object-fit: contain;"
+          style="height: 78px; object-fit: contain"
         />
         <span class="header-title">Shop Portal</span>
       </div>
       <div class="header-actions">
-        <div class="cart-icon-wrapper" (click)="activeTab = 'cart'; selectedStoreForMap = null">
+        <div
+          class="cart-icon-wrapper"
+          (click)="activeTab = 'cart'; selectedStoreForMap = null"
+        >
           <span class="cart-badge">🛒</span>
-          <span *ngIf="cart.length > 0" class="cart-badge-count">{{ getCartItemsCount() }}</span>
+          <span *ngIf="cart.length > 0" class="cart-badge-count">{{
+            getCartItemsCount()
+          }}</span>
         </div>
       </div>
     </div>
@@ -42,466 +50,650 @@
 <!-- Main Split Panel Layout with Orange Body Wrapper -->
 <div class="body-wrapper">
   <div class="container main-content-wrapper">
-  <!-- Left Sidebar Navigation -->
-  <aside class="sidebar-panel">
-    <h3 class="sidebar-title">Customer Center</h3>
-    <ul class="sidebar-menu">
-      <li 
-        [class.active]="activeTab === 'catalog'" 
-        (click)="activeTab = 'catalog'; selectedStoreForMap = null"
-        class="menu-item"
-      >
-        Browse Products
-        <span class="active-indicator"></span>
-      </li>
-      <li 
-        [class.active]="activeTab === 'cart'" 
-        (click)="activeTab = 'cart'; selectedStoreForMap = null"
-        class="menu-item"
-      >
-        Shopping Cart ({{ cart.length }})
-        <span class="active-indicator"></span>
-      </li>
-      <li 
-        [class.active]="activeTab === 'orders'" 
-        (click)="activeTab = 'orders'; selectedStoreForMap = null"
-        class="menu-item"
-      >
-        My Purchase History
-        <span class="active-indicator"></span>
-      </li>
-      <li 
-        [class.active]="activeTab === 'chat'" 
-        (click)="activeTab = 'chat'; selectedStoreForMap = null; loadChats()"
-        class="menu-item"
-      >
-        My Chats
-        <span class="active-indicator"></span>
-      </li>
-      <li 
-        [class.active]="activeTab === 'account'" 
-        (click)="activeTab = 'account'; selectedStoreForMap = null"
-        class="menu-item"
-      >
-        My Account
-        <span class="active-indicator"></span>
-      </li>
-    </ul>
-  </aside>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar-panel">
+      <h3 class="sidebar-title">Customer Center</h3>
+      <ul class="sidebar-menu">
+        <li
+          [class.active]="activeTab === 'catalog'"
+          (click)="activeTab = 'catalog'; selectedStoreForMap = null"
+          class="menu-item"
+        >
+          Browse Products
+          <span class="active-indicator"></span>
+        </li>
+        <li
+          [class.active]="activeTab === 'cart'"
+          (click)="activeTab = 'cart'; selectedStoreForMap = null"
+          class="menu-item"
+        >
+          Shopping Cart ({{ cart.length }})
+          <span class="active-indicator"></span>
+        </li>
+        <li
+          [class.active]="activeTab === 'orders'"
+          (click)="activeTab = 'orders'; selectedStoreForMap = null"
+          class="menu-item"
+        >
+          My Purchase History
+          <span class="active-indicator"></span>
+        </li>
+        <li
+          [class.active]="activeTab === 'chat'"
+          (click)="activeTab = 'chat'; selectedStoreForMap = null; loadChats()"
+          class="menu-item"
+        >
+          My Chats
+          <span class="active-indicator"></span>
+        </li>
+        <li
+          [class.active]="activeTab === 'account'"
+          (click)="activeTab = 'account'; selectedStoreForMap = null"
+          class="menu-item"
+        >
+          My Account
+          <span class="active-indicator"></span>
+        </li>
+      </ul>
+    </aside>
 
-  <!-- Right Main Content Panel -->
-  <main class="content-pane">
-    <!-- Alerts -->
-    <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
-    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-
-    <!-- 1. CATALOG TAB -->
-    <div *ngIf="activeTab === 'catalog'" class="tab-content">
-      <div class="pane-header">
-        <h2 class="pane-title">Browse Products</h2>
-        <p class="pane-subtitle">Search and filter hundreds of listings across multiple merchant stores</p>
+    <!-- Right Main Content Panel -->
+    <main class="content-pane">
+      <!-- Alerts -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
       </div>
 
-      <!-- Search / Filter bar -->
-      <div class="card search-filter-card">
-        <input
-          type="text"
-          placeholder="Search products..."
-          class="form-control filter-input"
-          style="flex: 2; min-width: 200px"
-          [(ngModel)]="filters.search"
-          (ngModelChange)="loadProducts()"
-        />
-
-        <select
-          class="form-control filter-select"
-          style="flex: 1; min-width: 150px"
-          [(ngModel)]="filters.categoryId"
-          (ngModelChange)="loadProducts()"
-        >
-          <option value="">All Categories</option>
-          <option *ngFor="let cat of categories" [value]="cat._id">
-            {{ cat.name }}
-          </option>
-        </select>
-
-        <select
-          class="form-control filter-select"
-          style="flex: 1; min-width: 150px"
-          [(ngModel)]="filters.storeId"
-          (ngModelChange)="loadProducts()"
-        >
-          <option value="">All Stores</option>
-          <option *ngFor="let st of stores" [value]="st._id">
-            {{ st.name }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Map Preview of Selected Store Location -->
-      <div *ngIf="selectedStoreForMap" class="card store-map-card">
-        <div class="store-map-header">
-          <h3>📍 Store Location Pin: {{ selectedStoreForMap.name }}</h3>
-          <button (click)="selectedStoreForMap = null" class="btn btn-secondary btn-xs">Close Map</button>
+      <!-- 1. CATALOG TAB -->
+      <div *ngIf="activeTab === 'catalog'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">Browse Products</h2>
+          <p class="pane-subtitle">
+            Search and filter hundreds of listings across multiple merchant
+            stores
+          </p>
         </div>
-        <p class="store-map-address">Address: {{ selectedStoreForMap.location?.address }}</p>
-        <app-map
-          [lat]="selectedStoreForMap.location?.lat"
-          [lng]="selectedStoreForMap.location?.lng"
-          [readOnly]="true"
-        ></app-map>
-      </div>
 
-      <!-- Product list grid -->
-      <div *ngIf="products.length === 0" class="empty-state">
-        No products match your search/filter criteria.
-      </div>
+        <!-- Search / Filter bar -->
+        <div class="card search-filter-card">
+          <input
+            type="text"
+            placeholder="Search products..."
+            class="form-control filter-input"
+            style="flex: 2; min-width: 200px"
+            [(ngModel)]="filters.search"
+            (ngModelChange)="loadProducts()"
+          />
 
-      <div *ngIf="products.length > 0" class="product-cards-grid">
-        <div *ngFor="let prod of products" class="card product-card">
-          <div class="prod-card-top">
-            <img [src]="getProductImageUrl(prod.imageUrl)" alt="prod image" class="prod-img" />
-            <h3 class="prod-title">{{ prod.name }}</h3>
-            <p class="prod-description">{{ prod.description }}</p>
+          <select
+            class="form-control filter-select"
+            style="flex: 1; min-width: 150px"
+            [(ngModel)]="filters.categoryId"
+            (ngModelChange)="loadProducts()"
+          >
+            <option value="">All Categories</option>
+            <option *ngFor="let cat of categories" [value]="cat._id">
+              {{ cat.name }}
+            </option>
+          </select>
 
-            <div class="prod-meta-row">
-              <span class="prod-cat-badge">{{ prod.categoryId?.name }}</span>
-              <span class="prod-stock-text">Stock: {{ prod.stock }}</span>
+          <select
+            class="form-control filter-select"
+            style="flex: 1; min-width: 150px"
+            [(ngModel)]="filters.storeId"
+            (ngModelChange)="loadProducts()"
+          >
+            <option value="">All Stores</option>
+            <option *ngFor="let st of stores" [value]="st._id">
+              {{ st.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Map Preview of Selected Store Location -->
+        <div *ngIf="selectedStoreForMap" class="card store-map-card">
+          <div class="store-map-header">
+            <h3>📍 Store Location Pin: {{ selectedStoreForMap.name }}</h3>
+            <button
+              (click)="selectedStoreForMap = null"
+              class="btn btn-secondary btn-xs"
+            >
+              Close Map
+            </button>
+          </div>
+          <p class="store-map-address">
+            Address: {{ selectedStoreForMap.location?.address }}
+          </p>
+          <app-map
+            [lat]="selectedStoreForMap.location?.lat"
+            [lng]="selectedStoreForMap.location?.lng"
+            [readOnly]="true"
+          ></app-map>
+        </div>
+
+        <!-- Product list grid -->
+        <div *ngIf="products.length === 0" class="empty-state">
+          No products match your search/filter criteria.
+        </div>
+
+        <div *ngIf="products.length > 0" class="product-cards-grid">
+          <div *ngFor="let prod of products" class="card product-card">
+            <div class="prod-card-top">
+              <img
+                [src]="getProductImageUrl(prod.imageUrl)"
+                alt="prod image"
+                class="prod-img"
+              />
+              <h3 class="prod-title">{{ prod.name }}</h3>
+              <p class="prod-description">{{ prod.description }}</p>
+
+              <div class="prod-meta-row">
+                <span class="prod-cat-badge">{{ prod.categoryId?.name }}</span>
+                <span class="prod-stock-text">Stock: {{ prod.stock }}</span>
+              </div>
+
+              <div class="prod-store-info">
+                🏪 Store:
+                <strong class="store-name-text">{{
+                  prod.storeId?.name
+                }}</strong>
+                <div style="display: flex; gap: 5px; margin-top: 5px">
+                  <button
+                    (click)="viewStoreLocation(prod.storeId)"
+                    class="btn btn-secondary btn-xs pin-map-btn"
+                    style="flex: 1; padding: 3px 6px"
+                  >
+                    📍 Map
+                  </button>
+                  <button
+                    (click)="
+                      startChatWithSeller(
+                        prod.storeId?.ownerId,
+                        prod.storeId?.name
+                      )
+                    "
+                    class="btn btn-secondary btn-xs chat-seller-btn"
+                    style="
+                      flex: 1;
+                      padding: 3px 6px;
+                      color: #ee4d2d;
+                      border-color: #ee4d2d;
+                    "
+                  >
+                    💬 Chat
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div class="prod-store-info">
-              🏪 Store: <strong class="store-name-text">{{ prod.storeId?.name }}</strong>
-              <div style="display: flex; gap: 5px; margin-top: 5px;">
-                <button (click)="viewStoreLocation(prod.storeId)" class="btn btn-secondary btn-xs pin-map-btn" style="flex: 1; padding: 3px 6px;">📍 Map</button>
-                <button (click)="startChatWithSeller(prod.storeId?.ownerId, prod.storeId?.name)" class="btn btn-secondary btn-xs chat-seller-btn" style="flex: 1; padding: 3px 6px; color: #ee4d2d; border-color: #ee4d2d;">💬 Chat</button>
+            <div class="prod-card-bottom">
+              <div class="prod-price-row">
+                <span class="prod-price-text"
+                  >₱{{ prod.price | number: "1.2-2" }}</span
+                >
+                <button
+                  [disabled]="prod.stock === 0"
+                  (click)="addToCart(prod)"
+                  class="btn btn-primary btn-xs add-cart-btn"
+                >
+                  {{ prod.stock === 0 ? "Out of Stock" : "Add to Cart" }}
+                </button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div class="prod-card-bottom">
-            <div class="prod-price-row">
-              <span class="prod-price-text">₱{{ prod.price | number:'1.2-2' }}</span>
-              <button
-                [disabled]="prod.stock === 0"
-                (click)="addToCart(prod)"
-                class="btn btn-primary btn-xs add-cart-btn"
-              >
-                {{ prod.stock === 0 ? "Out of Stock" : "Add to Cart" }}
-              </button>
+      <!-- 2. CART TAB -->
+      <div *ngIf="activeTab === 'cart'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">Shopping Cart</h2>
+          <p class="pane-subtitle">
+            Manage items you want to purchase and place your order
+          </p>
+        </div>
+
+        <div class="cart-grid-layout">
+          <!-- Left: Cart items list -->
+          <div class="card cart-items-card">
+            <h3>Items Added</h3>
+            <div *ngIf="cart.length === 0" class="empty-state">
+              Your cart is empty. Browse products and add items!
+            </div>
+
+            <div class="table-container" *ngIf="cart.length > 0">
+              <table class="shopee-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of cart; let i = index">
+                    <td>
+                      <div class="table-prod-info">
+                        <img
+                          [src]="getProductImageUrl(item.imageUrl)"
+                          class="table-prod-img"
+                        />
+                        <div>
+                          <strong>{{ item.name }}</strong>
+                          <br />
+                          <small class="table-prod-store"
+                            >Store: {{ item.storeName }}</small
+                          >
+                        </div>
+                      </div>
+                    </td>
+                    <td class="amount-cell">
+                      ₱{{ item.price | number: "1.2-2" }}
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        [(ngModel)]="item.quantity"
+                        (ngModelChange)="onCartQuantityChanged(i)"
+                        min="1"
+                        [max]="item.stock"
+                        class="form-control cart-qty-input"
+                      />
+                    </td>
+                    <td class="amount-cell">
+                      ₱{{ item.price * item.quantity | number: "1.2-2" }}
+                    </td>
+                    <td>
+                      <button
+                        (click)="removeFromCart(i)"
+                        class="btn btn-danger btn-xs"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: Checkout summary -->
+          <div *ngIf="cart.length > 0" class="card checkout-summary-card">
+            <h3>Order Summary</h3>
+            <div class="checkout-summary-body">
+              <div class="summary-price-row">
+                <span>Total Price:</span>
+                <strong class="total-price-text"
+                  >₱{{ getCartTotal() | number: "1.2-2" }}</strong
+                >
+              </div>
+
+              <form (ngSubmit)="checkout()" class="shopee-form">
+                <div class="form-group">
+                  <label for="ship-addr">Shipping Address</label>
+                  <textarea
+                    id="ship-addr"
+                    name="shipAddr"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Enter delivery address..."
+                    [(ngModel)]="shippingAddress"
+                    required
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  [disabled]="!shippingAddress"
+                  class="btn btn-primary btn-block place-order-btn"
+                >
+                  Place Order
+                </button>
+              </form>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 2. CART TAB -->
-    <div *ngIf="activeTab === 'cart'" class="tab-content">
-      <div class="pane-header">
-        <h2 class="pane-title">Shopping Cart</h2>
-        <p class="pane-subtitle">Manage items you want to purchase and place your order</p>
-      </div>
+      <!-- 3. PURCHASE HISTORY TAB -->
+      <div *ngIf="activeTab === 'orders'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">My Purchase History</h2>
+          <p class="pane-subtitle">
+            View and monitor your past transactions and fulfillment status
+          </p>
+        </div>
 
-      <div class="cart-grid-layout">
-        <!-- Left: Cart items list -->
-        <div class="card cart-items-card">
-          <h3>Items Added</h3>
-          <div *ngIf="cart.length === 0" class="empty-state">
-            Your cart is empty. Browse products and add items!
+        <div class="card history-card">
+          <h3>Past Transactions</h3>
+          <div *ngIf="orders.length === 0" class="empty-state">
+            You haven't made any purchases yet.
           </div>
 
-          <div class="table-container" *ngIf="cart.length > 0">
+          <div class="table-container" *ngIf="orders.length > 0">
             <table class="shopee-table">
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                  <th>Total</th>
-                  <th>Actions</th>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Items Purchased</th>
+                  <th>Total Cost</th>
+                  <th>Fulfillment Status</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of cart; let i = index">
+                <tr *ngFor="let order of orders">
+                  <td class="order-id-cell">{{ order._id }}</td>
+                  <td class="date-cell">
+                    {{ order.createdAt | date: "medium" }}
+                  </td>
                   <td>
-                    <div class="table-prod-info">
-                      <img [src]="getProductImageUrl(item.imageUrl)" class="table-prod-img" />
-                      <div>
-                        <strong>{{ item.name }}</strong>
-                        <br/>
-                        <small class="table-prod-store">Store: {{ item.storeName }}</small>
+                    <ul class="order-products-list">
+                      <li *ngFor="let item of order.items">
+                        - {{ item.productId?.name }} (Qty: {{ item.quantity }} x
+                        ₱{{ item.price | number: "1.2-2" }})
+                        <br />
+                        <small class="store-text"
+                          >Store: {{ item.storeId?.name }}</small
+                        >
+                      </li>
+                    </ul>
+                    <!-- Address Editor -->
+                    <div
+                      style="
+                        margin-top: 8px;
+                        font-size: 12px;
+                        color: #555;
+                        border-top: 1px dashed #eee;
+                        padding-top: 5px;
+                      "
+                    >
+                      <div *ngIf="editingOrderAddressId !== order._id">
+                        📍 Address: <strong>{{ order.shippingAddress }}</strong>
+                        <button
+                          *ngIf="order.status === 'pending'"
+                          (click)="startEditAddress(order)"
+                          class="btn btn-secondary btn-xs"
+                          style="
+                            padding: 1px 4px;
+                            font-size: 10px;
+                            margin-left: 5px;
+                            border-color: #ddd;
+                          "
+                        >
+                          Edit
+                        </button>
+                      </div>
+                      <div
+                        *ngIf="editingOrderAddressId === order._id"
+                        style="display: flex; gap: 5px; margin-top: 5px"
+                      >
+                        <input
+                          type="text"
+                          [(ngModel)]="newOrderAddressText"
+                          class="form-control"
+                          style="
+                            padding: 2px 6px;
+                            font-size: 11px;
+                            height: 26px;
+                            flex: 1;
+                          "
+                        />
+                        <button
+                          (click)="saveOrderAddress(order._id)"
+                          class="btn btn-primary btn-xs"
+                          style="padding: 2px 6px; height: 26px"
+                        >
+                          Save
+                        </button>
+                        <button
+                          (click)="cancelEditAddress()"
+                          class="btn btn-secondary btn-xs"
+                          style="padding: 2px 6px; height: 26px"
+                        >
+                          Cancel
+                        </button>
                       </div>
                     </div>
                   </td>
-                  <td class="amount-cell">₱{{ item.price | number:'1.2-2' }}</td>
-                  <td>
-                    <input
-                      type="number"
-                      [(ngModel)]="item.quantity"
-                      (ngModelChange)="onCartQuantityChanged(i)"
-                      min="1"
-                      [max]="item.stock"
-                      class="form-control cart-qty-input"
-                    />
+                  <td class="amount-cell text-lg">
+                    ₱{{ order.totalAmount | number: "1.2-2" }}
                   </td>
-                  <td class="amount-cell">₱{{ item.price * item.quantity | number:'1.2-2' }}</td>
                   <td>
-                    <button (click)="removeFromCart(i)" class="btn btn-danger btn-xs">Remove</button>
+                    <span
+                      class="status-badge"
+                      [class.status-delivered]="
+                        order.status === 'delivered' ||
+                        order.status === 'shipped'
+                      "
+                      [class.status-pending]="
+                        order.status === 'pending' ||
+                        order.status === 'processing'
+                      "
+                      [class.status-cancelled]="order.status === 'cancelled'"
+                    >
+                      {{ order.status }}
+                    </span>
+                    <div
+                      *ngIf="
+                        order.status === 'pending' ||
+                        order.status === 'processing'
+                      "
+                      style="margin-top: 8px"
+                    >
+                      <button
+                        (click)="cancelOrder(order._id)"
+                        class="btn btn-danger btn-xs"
+                        style="
+                          font-size: 11px;
+                          padding: 3px 6px;
+                          width: 100%;
+                          display: block;
+                        "
+                      >
+                        Cancel Order
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-
-        <!-- Right: Checkout summary -->
-        <div *ngIf="cart.length > 0" class="card checkout-summary-card">
-          <h3>Order Summary</h3>
-          <div class="checkout-summary-body">
-            <div class="summary-price-row">
-              <span>Total Price:</span>
-              <strong class="total-price-text">₱{{ getCartTotal() | number:'1.2-2' }}</strong>
-            </div>
-
-            <form (ngSubmit)="checkout()" class="shopee-form">
-              <div class="form-group">
-                <label for="ship-addr">Shipping Address</label>
-                <textarea
-                  id="ship-addr"
-                  name="shipAddr"
-                  class="form-control"
-                  rows="3"
-                  placeholder="Enter delivery address..."
-                  [(ngModel)]="shippingAddress"
-                  required
-                ></textarea>
-              </div>
-              <button
-                type="submit"
-                [disabled]="!shippingAddress"
-                class="btn btn-primary btn-block place-order-btn"
-              >
-                Place Order
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. PURCHASE HISTORY TAB -->
-    <div *ngIf="activeTab === 'orders'" class="tab-content">
-      <div class="pane-header">
-        <h2 class="pane-title">My Purchase History</h2>
-        <p class="pane-subtitle">View and monitor your past transactions and fulfillment status</p>
       </div>
 
-      <div class="card history-card">
-        <h3>Past Transactions</h3>
-        <div *ngIf="orders.length === 0" class="empty-state">
-          You haven't made any purchases yet.
-        </div>
-        
-        <div class="table-container" *ngIf="orders.length > 0">
-          <table class="shopee-table">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Items Purchased</th>
-                <th>Total Cost</th>
-                <th>Fulfillment Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let order of orders">
-                <td class="order-id-cell">{{ order._id }}</td>
-                <td class="date-cell">{{ order.createdAt | date:"medium" }}</td>
-                <td>
-                  <ul class="order-products-list">
-                    <li *ngFor="let item of order.items">
-                      - {{ item.productId?.name }} (Qty: {{ item.quantity }} x ₱{{ item.price | number:'1.2-2' }})
-                      <br/>
-                      <small class="store-text">Store: {{ item.storeId?.name }}</small>
-                    </li>
-                  </ul>
-                  <!-- Address Editor -->
-                  <div style="margin-top: 8px; font-size: 12px; color: #555; border-top: 1px dashed #eee; padding-top: 5px;">
-                    <div *ngIf="editingOrderAddressId !== order._id">
-                      📍 Address: <strong>{{ order.shippingAddress }}</strong>
-                      <button 
-                        *ngIf="order.status === 'pending'" 
-                        (click)="startEditAddress(order)" 
-                        class="btn btn-secondary btn-xs" 
-                        style="padding: 1px 4px; font-size: 10px; margin-left: 5px; border-color: #ddd;"
-                      >
-                        Edit
-                      </button>
-                    </div>
-                    <div *ngIf="editingOrderAddressId === order._id" style="display: flex; gap: 5px; margin-top: 5px;">
-                      <input 
-                        type="text" 
-                        [(ngModel)]="newOrderAddressText" 
-                        class="form-control" 
-                        style="padding: 2px 6px; font-size: 11px; height: 26px; flex: 1;" 
-                      />
-                      <button (click)="saveOrderAddress(order._id)" class="btn btn-primary btn-xs" style="padding: 2px 6px; height: 26px;">Save</button>
-                      <button (click)="cancelEditAddress()" class="btn btn-secondary btn-xs" style="padding: 2px 6px; height: 26px;">Cancel</button>
-                    </div>
-                  </div>
-                </td>
-                <td class="amount-cell text-lg">₱{{ order.totalAmount | number:'1.2-2' }}</td>
-                <td>
-                  <span
-                    class="status-badge"
-                    [class.status-delivered]="order.status === 'delivered' || order.status === 'shipped'"
-                    [class.status-pending]="order.status === 'pending' || order.status === 'processing'"
-                    [class.status-cancelled]="order.status === 'cancelled'"
-                  >
-                    {{ order.status }}
-                  </span>
-                  <div *ngIf="order.status === 'pending' || order.status === 'processing'" style="margin-top: 8px;">
-                    <button 
-                      (click)="cancelOrder(order._id)" 
-                      class="btn btn-danger btn-xs" 
-                      style="font-size: 11px; padding: 3px 6px; width: 100%; display: block;"
-                    >
-                      Cancel Order
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. CHAT TAB -->
-    <div *ngIf="activeTab === 'chat'" class="tab-content">
-      <div class="pane-header">
-        <h2 class="pane-title">My Messages</h2>
-        <p class="pane-subtitle">Chat with store owners about products, order updates, or inquiries</p>
-      </div>
-
-      <div class="card chat-panel-card" style="padding: 0; overflow: hidden;">
-        <div class="chat-container">
-          <!-- Left Side: Chat Threads List -->
-          <div class="chat-threads-sidebar">
-            <div class="chat-sidebar-header">
-              <h3>Seller Chats</h3>
-            </div>
-            <div class="chat-threads-list">
-              <div *ngIf="chats.length === 0" class="empty-chats">No active chats with sellers.</div>
-              <div 
-                *ngFor="let chat of chats" 
-                (click)="selectChat(chat)" 
-                class="chat-thread-item"
-                [class.active]="selectedChat?.otherUser?._id === chat.otherUser?._id"
-              >
-                <div class="thread-user-avatar">🏪</div>
-                <div class="thread-details">
-                  <div class="thread-user-name">
-                    <strong>{{ chat.otherUser?.storeInfo?.name || chat.otherUser?.profile?.name || chat.otherUser?.email }}</strong>
-                  </div>
-                  <div class="thread-last-message" [class.unread]="!chat.lastMessage?.isRead && chat.lastMessage?.senderId !== currentUserId">
-                    {{ chat.lastMessage?.content }}
-                  </div>
-                </div>
-                <div *ngIf="!chat.lastMessage?.isRead && chat.lastMessage?.senderId !== currentUserId" class="unread-dot"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right Side: Active Chat Window -->
-          <div class="chat-window-pane">
-            <div *ngIf="!selectedChat" class="chat-no-selection">
-              <span class="chat-bubble-icon">💬</span>
-              <h3>Select a seller to start messaging</h3>
-            </div>
-
-            <div *ngIf="selectedChat" class="chat-window-active">
-              <div class="chat-window-header">
-                <strong>💬 Store: {{ selectedChat.otherUser?.storeInfo?.name || selectedChat.otherUser?.profile?.name || selectedChat.otherUser?.email }}</strong>
-              </div>
-
-              <div class="chat-messages-display">
-                <div *ngIf="chatMessages.length === 0" class="empty-conversation">Send a message to start the conversation!</div>
-                <div 
-                  *ngFor="let msg of chatMessages" 
-                  class="chat-message-bubble"
-                  [class.outgoing]="msg.senderId?._id === currentUserId || msg.senderId === currentUserId"
-                  [class.incoming]="msg.senderId?._id !== currentUserId && msg.senderId !== currentUserId"
-                >
-                  <div class="message-content">{{ msg.content }}</div>
-                  <div class="message-time">{{ msg.createdAt | date:'shortTime' }}</div>
-                </div>
-              </div>
-
-              <form (ngSubmit)="sendChatMessage()" class="chat-input-form">
-                <input 
-                  type="text" 
-                  placeholder="Type your message..." 
-                  name="newMsg"
-                  class="form-control chat-input-field" 
-                  [(ngModel)]="newMessageText" 
-                  required 
-                  autocomplete="off"
-                />
-                <button type="submit" class="btn btn-primary chat-send-btn">Send</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 5. MY ACCOUNT TAB -->
-    <div *ngIf="activeTab === 'account'" class="tab-content">
-      <div class="pane-header">
-        <h2 class="pane-title">My Account Settings</h2>
-        <p class="pane-subtitle">Manage and update your personal details or deactivate your account.</p>
-      </div>
-
-      <div class="card">
-        <h3>Profile Information</h3>
-        <form (ngSubmit)="updateProfile()" class="shopee-form">
-          <div class="form-group">
-            <label for="profile-name">Full Name</label>
-            <input 
-              type="text" 
-              id="profile-name" 
-              name="profName" 
-              class="form-control" 
-              placeholder="e.g. John Doe" 
-              [(ngModel)]="profileForm.name" 
-              required 
-            />
-          </div>
-          <div class="form-group">
-            <label for="profile-phone">Phone Number</label>
-            <input 
-              type="text" 
-              id="profile-phone" 
-              name="profPhone" 
-              class="form-control" 
-              placeholder="e.g. 09123456789" 
-              [(ngModel)]="profileForm.phone" 
-            />
-          </div>
-          <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Save Profile Details</button>
-        </form>
-
-        <div style="margin-top: 40px; padding-top: 25px; border-top: 1px solid #f0f0f0;">
-          <h3 style="color: #ff4d4f;">Deactivate Account</h3>
-          <p style="font-size: 13px; color: #777; margin-bottom: 15px;">
-            Deactivating your account will disable your profile and prevent you from logging in. Any open orders must be resolved before deactivation.
+      <!-- 4. CHAT TAB -->
+      <div *ngIf="activeTab === 'chat'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">My Messages</h2>
+          <p class="pane-subtitle">
+            Chat with store owners about products, order updates, or inquiries
           </p>
-          <button (click)="deactivateAccount()" class="btn btn-danger">Deactivate My Account</button>
+        </div>
+
+        <div class="card chat-panel-card" style="padding: 0; overflow: hidden">
+          <div class="chat-container">
+            <!-- Left Side: Chat Threads List -->
+            <div class="chat-threads-sidebar">
+              <div class="chat-sidebar-header">
+                <h3>Seller Chats</h3>
+              </div>
+              <div class="chat-threads-list">
+                <div *ngIf="chats.length === 0" class="empty-chats">
+                  No active chats with sellers.
+                </div>
+                <div
+                  *ngFor="let chat of chats"
+                  (click)="selectChat(chat)"
+                  class="chat-thread-item"
+                  [class.active]="
+                    selectedChat?.otherUser?._id === chat.otherUser?._id
+                  "
+                >
+                  <div class="thread-user-avatar">🏪</div>
+                  <div class="thread-details">
+                    <div class="thread-user-name">
+                      <strong>{{
+                        chat.otherUser?.storeInfo?.name ||
+                          chat.otherUser?.profile?.name ||
+                          chat.otherUser?.email
+                      }}</strong>
+                    </div>
+                    <div
+                      class="thread-last-message"
+                      [class.unread]="
+                        !chat.lastMessage?.isRead &&
+                        chat.lastMessage?.senderId !== currentUserId
+                      "
+                    >
+                      {{ chat.lastMessage?.content }}
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="
+                      !chat.lastMessage?.isRead &&
+                      chat.lastMessage?.senderId !== currentUserId
+                    "
+                    class="unread-dot"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side: Active Chat Window -->
+            <div class="chat-window-pane">
+              <div *ngIf="!selectedChat" class="chat-no-selection">
+                <span class="chat-bubble-icon">💬</span>
+                <h3>Select a seller to start messaging</h3>
+              </div>
+
+              <div *ngIf="selectedChat" class="chat-window-active">
+                <div class="chat-window-header">
+                  <strong
+                    >💬 Store:
+                    {{
+                      selectedChat.otherUser?.storeInfo?.name ||
+                        selectedChat.otherUser?.profile?.name ||
+                        selectedChat.otherUser?.email
+                    }}</strong
+                  >
+                </div>
+
+                <div class="chat-messages-display">
+                  <div
+                    *ngIf="chatMessages.length === 0"
+                    class="empty-conversation"
+                  >
+                    Send a message to start the conversation!
+                  </div>
+                  <div
+                    *ngFor="let msg of chatMessages"
+                    class="chat-message-bubble"
+                    [class.outgoing]="
+                      msg.senderId?._id === currentUserId ||
+                      msg.senderId === currentUserId
+                    "
+                    [class.incoming]="
+                      msg.senderId?._id !== currentUserId &&
+                      msg.senderId !== currentUserId
+                    "
+                  >
+                    <div class="message-content">{{ msg.content }}</div>
+                    <div class="message-time">
+                      {{ msg.createdAt | date: "shortTime" }}
+                    </div>
+                  </div>
+                </div>
+
+                <form (ngSubmit)="sendChatMessage()" class="chat-input-form">
+                  <input
+                    type="text"
+                    placeholder="Type your message..."
+                    name="newMsg"
+                    class="form-control chat-input-field"
+                    [(ngModel)]="newMessageText"
+                    required
+                    autocomplete="off"
+                  />
+                  <button type="submit" class="btn btn-primary chat-send-btn">
+                    Send
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </main>
-</div>
+
+      <!-- 5. MY ACCOUNT TAB -->
+      <div *ngIf="activeTab === 'account'" class="tab-content">
+        <div class="pane-header">
+          <h2 class="pane-title">My Account Settings</h2>
+          <p class="pane-subtitle">
+            Manage and update your personal details or deactivate your account.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Profile Information</h3>
+          <form (ngSubmit)="updateProfile()" class="shopee-form">
+            <div class="form-group">
+              <label for="profile-name">Full Name</label>
+              <input
+                type="text"
+                id="profile-name"
+                name="profName"
+                class="form-control"
+                placeholder="e.g. John Doe"
+                [(ngModel)]="profileForm.name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="profile-phone">Phone Number</label>
+              <input
+                type="text"
+                id="profile-phone"
+                name="profPhone"
+                class="form-control"
+                placeholder="e.g. 09123456789"
+                [(ngModel)]="profileForm.phone"
+              />
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              style="margin-top: 10px"
+            >
+              Save Profile Details
+            </button>
+          </form>
+
+          <div
+            style="
+              margin-top: 40px;
+              padding-top: 25px;
+              border-top: 1px solid #f0f0f0;
+            "
+          >
+            <h3 style="color: #ff4d4f">Deactivate Account</h3>
+            <p style="font-size: 13px; color: #777; margin-bottom: 15px">
+              Deactivating your account will disable your profile and prevent
+              you from logging in. Any open orders must be resolved before
+              deactivation.
+            </p>
+            <button (click)="deactivateAccount()" class="btn btn-danger">
+              Deactivate My Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 
 <!-- White Footer -->

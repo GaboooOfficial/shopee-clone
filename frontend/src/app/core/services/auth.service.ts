@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = 'http://localhost:3000/api/auth';
@@ -35,7 +35,7 @@ export class AuthService {
     const token = this.getToken();
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : ''
+      Authorization: token ? `Bearer ${token}` : '',
     });
   }
 
@@ -45,13 +45,16 @@ export class AuthService {
 
   login(credentials: { email: string; password: any }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(response => {
+      tap((response) => {
         if (response.success && response.data.token) {
           localStorage.setItem('shopee_token', response.data.token);
-          localStorage.setItem('shopee_user', JSON.stringify(response.data.user));
+          localStorage.setItem(
+            'shopee_user',
+            JSON.stringify(response.data.user),
+          );
           this.currentUserSubject.next(response.data.user);
         }
-      })
+      }),
     );
   }
 
@@ -62,14 +65,16 @@ export class AuthService {
   }
 
   fetchProfile(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/me`, { headers: this.getAuthHeaders() }).pipe(
-      tap(response => {
-        if (response.success) {
-          localStorage.setItem('shopee_user', JSON.stringify(response.data));
-          this.currentUserSubject.next(response.data);
-        }
-      })
-    );
+    return this.http
+      .get<any>(`${this.apiUrl}/me`, { headers: this.getAuthHeaders() })
+      .pipe(
+        tap((response) => {
+          if (response.success) {
+            localStorage.setItem('shopee_user', JSON.stringify(response.data));
+            this.currentUserSubject.next(response.data);
+          }
+        }),
+      );
   }
 
   hasRole(roles: string[]): boolean {

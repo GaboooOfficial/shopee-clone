@@ -1,10 +1,16 @@
-const Product = require('./model');
-const Store = require('../store/model');
+const Product = require("./model");
+const Store = require("../store/model");
 
 const createProduct = async (ownerId, productData) => {
-  const store = await Store.findOne({ ownerId, status: 'approved', isDeactivated: false });
+  const store = await Store.findOne({
+    ownerId,
+    status: "approved",
+    isDeactivated: false,
+  });
   if (!store) {
-    const error = new Error('You do not have an approved and active store. Product cannot be added.');
+    const error = new Error(
+      "You do not have an approved and active store. Product cannot be added.",
+    );
     error.statusCode = 400;
     throw error;
   }
@@ -18,7 +24,7 @@ const createProduct = async (ownerId, productData) => {
     description,
     price,
     stock,
-    imageUrl
+    imageUrl,
   });
 
   return product;
@@ -27,17 +33,20 @@ const createProduct = async (ownerId, productData) => {
 const getStoreProducts = async (ownerId) => {
   const store = await Store.findOne({ ownerId });
   if (!store) {
-    const error = new Error('Store not found');
+    const error = new Error("Store not found");
     error.statusCode = 404;
     throw error;
   }
-  return await Product.find({ storeId: store._id }).populate('categoryId', 'name');
+  return await Product.find({ storeId: store._id }).populate(
+    "categoryId",
+    "name",
+  );
 };
 
 const updateProduct = async (ownerId, productId, productData) => {
   const store = await Store.findOne({ ownerId });
   if (!store) {
-    const error = new Error('Store not found');
+    const error = new Error("Store not found");
     error.statusCode = 404;
     throw error;
   }
@@ -45,11 +54,11 @@ const updateProduct = async (ownerId, productId, productData) => {
   const product = await Product.findOneAndUpdate(
     { _id: productId, storeId: store._id },
     productData,
-    { new: true }
+    { new: true },
   );
 
   if (!product) {
-    const error = new Error('Product not found or unauthorized');
+    const error = new Error("Product not found or unauthorized");
     error.statusCode = 404;
     throw error;
   }
@@ -60,14 +69,17 @@ const updateProduct = async (ownerId, productId, productData) => {
 const deleteProduct = async (ownerId, productId) => {
   const store = await Store.findOne({ ownerId });
   if (!store) {
-    const error = new Error('Store not found');
+    const error = new Error("Store not found");
     error.statusCode = 404;
     throw error;
   }
 
-  const product = await Product.findOneAndDelete({ _id: productId, storeId: store._id });
+  const product = await Product.findOneAndDelete({
+    _id: productId,
+    storeId: store._id,
+  });
   if (!product) {
-    const error = new Error('Product not found or unauthorized');
+    const error = new Error("Product not found or unauthorized");
     error.statusCode = 404;
     throw error;
   }
@@ -86,17 +98,17 @@ const getAllProducts = async (queryFilters) => {
   }
 
   return await Product.find(filter)
-    .populate('storeId', 'name location ownerId')
-    .populate('categoryId', 'name');
+    .populate("storeId", "name location ownerId")
+    .populate("categoryId", "name");
 };
 
 const getProductById = async (id) => {
   const product = await Product.findById(id)
-    .populate('storeId', 'name location description')
-    .populate('categoryId', 'name');
-    
+    .populate("storeId", "name location description")
+    .populate("categoryId", "name");
+
   if (!product) {
-    const error = new Error('Product not found');
+    const error = new Error("Product not found");
     error.statusCode = 404;
     throw error;
   }
@@ -109,5 +121,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getAllProducts,
-  getProductById
+  getProductById,
 };

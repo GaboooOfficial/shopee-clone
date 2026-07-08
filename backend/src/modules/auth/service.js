@@ -87,7 +87,7 @@ const updateProfile = async (userId, profileData) => {
     email: user.email,
     role: user.role,
     profile: user.profile,
-    status: user.status
+    status: user.status,
   };
 };
 
@@ -103,7 +103,7 @@ const deactivateUser = async (userId) => {
   await user.save();
   return {
     id: user._id,
-    status: user.status
+    status: user.status,
   };
 };
 
@@ -111,5 +111,5 @@ module.exports = {
   registerUser,
   loginUser,
   updateProfile,
-  deactivateUser
+  deactivateUser,
 };

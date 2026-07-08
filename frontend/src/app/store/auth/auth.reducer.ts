@@ -9,10 +9,12 @@ export interface AuthState {
 }
 
 export const initialAuthState: AuthState = {
-  user: localStorage.getItem('shopee_user') ? JSON.parse(localStorage.getItem('shopee_user')!) : null,
+  user: localStorage.getItem('shopee_user')
+    ? JSON.parse(localStorage.getItem('shopee_user')!)
+    : null,
   token: localStorage.getItem('shopee_token'),
   error: null,
-  loading: false
+  loading: false,
 };
 
 export const authReducer = createReducer(
@@ -20,24 +22,24 @@ export const authReducer = createReducer(
   on(AuthActions.login, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
   })),
   on(AuthActions.loginSuccess, (state, { user, token }) => ({
     ...state,
     user,
     token,
     loading: false,
-    error: null
+    error: null,
   })),
   on(AuthActions.loginFailure, (state, { error }) => ({
     ...state,
     loading: false,
-    error
+    error,
   })),
   on(AuthActions.logout, () => ({
     user: null,
     token: null,
     error: null,
-    loading: false
-  }))
+    loading: false,
+  })),
 );

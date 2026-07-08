@@ -4,9 +4,15 @@
     <div class="header-container">
       <div class="header-left">
         <a routerLink="/" class="logo-link">
-          <img src="assets/shopee_logo.png" alt="Shopee Logo" style="height: 78px; object-fit: contain;" />
+          <img
+            src="assets/shopee_logo.png"
+            alt="Shopee Logo"
+            style="height: 78px; object-fit: contain"
+          />
         </a>
-        <span class="header-title">{{ isLoginTab ? 'Log In' : 'Sign Up' }}</span>
+        <span class="header-title">{{
+          isLoginTab ? "Log In" : "Sign Up"
+        }}</span>
       </div>
       <div class="header-right">
         <a href="#" class="need-help-link">Need help?</a>
@@ -19,14 +25,22 @@
     <div class="banner-container">
       <!-- Left Column: Marketing Banner -->
       <div class="banner-promo-graphic">
-        <img src="assets/shopee_promo_banner.png" alt="Shopee 7.7 Campaign Banner" class="promo-image" />
+        <img
+          src="assets/shopee_promo_banner.png"
+          alt="Shopee 7.7 Campaign Banner"
+          class="promo-image"
+        />
       </div>
 
       <!-- Right Column: Login/Register Card -->
       <div class="auth-form-card">
         <!-- Error/Success Alerts -->
-        <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-        <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+        <div *ngIf="errorMessage" class="alert alert-danger">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="successMessage" class="alert alert-success">
+          {{ successMessage }}
+        </div>
 
         <!-- Login Form View -->
         <div *ngIf="isLoginTab" class="form-view-container">
@@ -34,39 +48,50 @@
             <h3 class="card-title">Log In</h3>
             <div class="qr-login-toggle">
               <span class="qr-label">Log in with QR</span>
-              <svg class="qr-icon" viewBox="0 0 24 24" width="28" height="28" fill="#ee4d2d">
-                <path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v2h-3v-2zm-2 2h2v2h-2v-2zm2 2h3v3h-3v-3zm-2 2h2v1h-2v-1zm4-4h1v2h-1v-2zm0 4h1v1h-1v-1zm-6-4h2v2h-2v-2zm0 4h2v1h-2v-1z"/>
+              <svg
+                class="qr-icon"
+                viewBox="0 0 24 24"
+                width="28"
+                height="28"
+                fill="#ee4d2d"
+              >
+                <path
+                  d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v2h-3v-2zm-2 2h2v2h-2v-2zm2 2h3v3h-3v-3zm-2 2h2v1h-2v-1zm4-4h1v2h-1v-2zm0 4h1v1h-1v-1zm-6-4h2v2h-2v-2zm0 4h2v1h-2v-1z"
+                />
               </svg>
             </div>
           </div>
 
           <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="shopee-form">
             <div class="input-wrapper">
-              <input 
-                type="email" 
-                name="email" 
-                class="shopee-input" 
+              <input
+                type="email"
+                name="email"
+                class="shopee-input"
                 placeholder="Phone number / Username / Email"
-                [(ngModel)]="loginData.email" 
-                required 
+                [(ngModel)]="loginData.email"
+                required
                 #loginEmail="ngModel"
               />
             </div>
 
             <div class="input-wrapper password-input-container">
-              <input 
-                type="password" 
-                name="password" 
-                class="shopee-input" 
+              <input
+                type="password"
+                name="password"
+                class="shopee-input"
                 placeholder="Password"
-                [(ngModel)]="loginData.password" 
-                required 
+                [(ngModel)]="loginData.password"
+                required
                 #passwordField
               />
-              <button 
-                type="button" 
+              <button
+                type="button"
                 class="toggle-password-btn"
-                (click)="passwordField.type = passwordField.type === 'password' ? 'text' : 'password'"
+                (click)="
+                  passwordField.type =
+                    passwordField.type === 'password' ? 'text' : 'password'
+                "
               >
                 👁️
               </button>
@@ -75,14 +100,23 @@
 
             <div class="stay-signed-in-wrapper">
               <label class="stay-signed-in-label">
-                <input type="checkbox" name="staySignedIn" class="stay-signed-in-checkbox" checked />
+                <input
+                  type="checkbox"
+                  name="staySignedIn"
+                  class="stay-signed-in-checkbox"
+                  checked
+                />
                 Stay Signed In
               </label>
               <span class="help-question-mark">?</span>
             </div>
 
-            <button type="submit" [disabled]="loginForm.invalid || isLoading" class="btn-shopee-submit">
-              {{ isLoading ? 'LOGGING IN...' : 'LOG IN' }}
+            <button
+              type="submit"
+              [disabled]="loginForm.invalid || isLoading"
+              class="btn-shopee-submit"
+            >
+              {{ isLoading ? "LOGGING IN..." : "LOG IN" }}
             </button>
           </form>
 
@@ -94,7 +128,9 @@
             <button type="button" class="btn-social btn-facebook">
               <span class="social-icon-wrapper">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="#1877F2">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  <path
+                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+                  />
                 </svg>
               </span>
               Facebook
@@ -102,10 +138,22 @@
             <button type="button" class="btn-social btn-google">
               <span class="social-icon-wrapper">
                 <svg viewBox="0 0 24 24" width="20" height="20">
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                    fill="#EA4335"
+                  />
                 </svg>
               </span>
               Google
@@ -113,11 +161,19 @@
           </div>
 
           <p class="terms-disclaimer">
-            By logging in, you agree to Shopee's <a href="#">Terms of Service</a> & <a href="#">Privacy Policy</a>
+            By logging in, you agree to Shopee's
+            <a href="#">Terms of Service</a> & <a href="#">Privacy Policy</a>
           </p>
 
           <div class="signup-redirect">
-            New to Shopee? <button type="button" class="btn-link-action" (click)="setTab(false)">Sign Up</button>
+            New to Shopee?
+            <button
+              type="button"
+              class="btn-link-action"
+              (click)="setTab(false)"
+            >
+              Sign Up
+            </button>
           </div>
         </div>
 
@@ -127,61 +183,74 @@
             <h3 class="card-title">Sign Up</h3>
           </div>
 
-          <form (ngSubmit)="onRegister()" #registerForm="ngForm" class="shopee-form">
+          <form
+            (ngSubmit)="onRegister()"
+            #registerForm="ngForm"
+            class="shopee-form"
+          >
             <div class="input-wrapper">
-              <input 
-                type="text" 
-                name="name" 
-                class="shopee-input" 
+              <input
+                type="text"
+                name="name"
+                class="shopee-input"
                 placeholder="Full Name"
-                [(ngModel)]="registerData.profile.name" 
-                required 
+                [(ngModel)]="registerData.profile.name"
+                required
               />
             </div>
 
             <div class="input-wrapper">
-              <input 
-                type="email" 
-                name="email" 
-                class="shopee-input" 
+              <input
+                type="email"
+                name="email"
+                class="shopee-input"
                 placeholder="Email Address"
-                [(ngModel)]="registerData.email" 
-                required 
+                [(ngModel)]="registerData.email"
+                required
                 pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
               />
             </div>
 
             <div class="input-wrapper">
-              <input 
-                type="text" 
-                name="phone" 
-                class="shopee-input" 
+              <input
+                type="text"
+                name="phone"
+                class="shopee-input"
                 placeholder="Phone Number"
-                [(ngModel)]="registerData.profile.phone" 
+                [(ngModel)]="registerData.profile.phone"
               />
             </div>
 
             <div class="input-wrapper">
-              <input 
-                type="password" 
-                name="password" 
-                class="shopee-input" 
+              <input
+                type="password"
+                name="password"
+                class="shopee-input"
                 placeholder="Password (Min 6 chars)"
-                [(ngModel)]="registerData.password" 
-                required 
+                [(ngModel)]="registerData.password"
+                required
                 minlength="6"
               />
             </div>
 
             <div class="input-wrapper select-wrapper">
-              <select name="role" class="shopee-input shopee-select" [(ngModel)]="registerData.role" required>
+              <select
+                name="role"
+                class="shopee-input shopee-select"
+                [(ngModel)]="registerData.role"
+                required
+              >
                 <option value="customer">Customer (Buy Products)</option>
                 <option value="store_owner">Store Owner (Sell Products)</option>
               </select>
             </div>
 
-            <button type="submit" [disabled]="registerForm.invalid || isLoading" class="btn-shopee-submit">
-              {{ isLoading ? 'CREATING ACCOUNT...' : 'SIGN UP' }}
+            <button
+              type="submit"
+              [disabled]="registerForm.invalid || isLoading"
+              class="btn-shopee-submit"
+            >
+              {{ isLoading ? "CREATING ACCOUNT..." : "SIGN UP" }}
             </button>
           </form>
 
@@ -189,12 +258,20 @@
             <span class="divider-text">OR</span>
           </div>
 
-          <div class="terms-disclaimer" style="margin-top: 10px;">
-            By signing up, you agree to Shopee's <a href="#">Terms of Service</a> & <a href="#">Privacy Policy</a>
+          <div class="terms-disclaimer" style="margin-top: 10px">
+            By signing up, you agree to Shopee's
+            <a href="#">Terms of Service</a> & <a href="#">Privacy Policy</a>
           </div>
 
           <div class="signup-redirect">
-            Have an account? <button type="button" class="btn-link-action" (click)="setTab(true)">Log In</button>
+            Have an account?
+            <button
+              type="button"
+              class="btn-link-action"
+              (click)="setTab(true)"
+            >
+              Log In
+            </button>
           </div>
         </div>
       </div>
@@ -247,7 +324,7 @@
             <span class="badge-item bank">Maya</span>
           </div>
 
-          <h5 class="footer-col-title" style="margin-top: 20px;">LOGISTICS</h5>
+          <h5 class="footer-col-title" style="margin-top: 20px">LOGISTICS</h5>
           <div class="badge-grid">
             <span class="badge-item carrier">SPX</span>
             <span class="badge-item carrier">Flash</span>
@@ -260,10 +337,18 @@
         <div class="footer-column">
           <h5 class="footer-col-title">FOLLOW US</h5>
           <ul class="footer-links social-links-list">
-            <li><a href="#"><span class="soc-icon">👤</span> Facebook</a></li>
-            <li><a href="#"><span class="soc-icon">📸</span> Instagram</a></li>
-            <li><a href="#"><span class="soc-icon">🐦</span> Twitter</a></li>
-            <li><a href="#"><span class="soc-icon">💼</span> LinkedIn</a></li>
+            <li>
+              <a href="#"><span class="soc-icon">👤</span> Facebook</a>
+            </li>
+            <li>
+              <a href="#"><span class="soc-icon">📸</span> Instagram</a>
+            </li>
+            <li>
+              <a href="#"><span class="soc-icon">🐦</span> Twitter</a>
+            </li>
+            <li>
+              <a href="#"><span class="soc-icon">💼</span> LinkedIn</a>
+            </li>
           </ul>
         </div>
 
@@ -307,4 +392,3 @@
     </div>
   </footer>
 </div>
-
