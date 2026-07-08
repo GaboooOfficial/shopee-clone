@@ -135,15 +135,15 @@ const forgotPassword = async (email) => {
     subject: "Reset Your Shopee Password",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; padding: 25px; border-radius: 8px;">
-        <h2 style="color: #ee4d2d; margin-top: 0; text-align: center;">LazShopee Verification Code</h2>
+        <h2 style="color: #ee4d2d; margin-top: 0; text-align: center;">Shopee Verification Code</h2>
         <p>Hello,</p>
-        <p>We received a request to reset your password for your LazShopee account. Use the 6-digit verification code below to set a new password:</p>
+        <p>We received a request to reset your password for your Shopee account. Use the 6-digit verification code below to set a new password:</p>
         <div style="background-color: #f9f9f9; border: 1px dashed #ee4d2d; font-size: 28px; font-weight: bold; letter-spacing: 5px; text-align: center; padding: 15px; margin: 20px 0; color: #ee4d2d; border-radius: 4px;">
           ${code}
         </div>
         <p style="color: #666; font-size: 13px;">This verification code is valid for <strong>10 minutes</strong>. If you did not make this request, you can safely ignore this email.</p>
         <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 20px 0;"/>
-        <p style="color: #999; font-size: 11px; text-align: center; margin: 0;">LazShopee Clone &copy; 2026. All Rights Reserved.</p>
+        <p style="color: #999; font-size: 11px; text-align: center; margin: 0;">hopee Clone &copy; 2026. All Rights Reserved.</p>
       </div>
     `,
   };

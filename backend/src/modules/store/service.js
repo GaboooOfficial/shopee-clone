@@ -66,9 +66,28 @@ const getApprovedStores = async () => {
   return await Store.find({ status: "approved", isDeactivated: false });
 };
 
+const deleteStore = async (ownerId, storeId) => {
+  const store = await Store.findOne({ _id: storeId, ownerId });
+  if (!store) {
+    const error = new Error("Store not found or you are not the owner");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  await Store.findByIdAndDelete(storeId);
+
+  // Clean up products associated with the store
+  const Product = require("../product/model");
+  await Product.deleteMany({ storeId });
+
+  return store;
+};
+
 module.exports = {
   createStore,
   getMyStore,
   updateStore,
   getApprovedStores,
+  deleteStore,
 };
+

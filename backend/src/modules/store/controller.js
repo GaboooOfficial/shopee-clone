@@ -49,9 +49,20 @@ const getApprovedStores = async (req, res) => {
   }
 };
 
+const deleteStore = async (req, res) => {
+  try {
+    const store = await storeService.deleteStore(req.user._id, req.params.id);
+    return sendSuccess(res, store, "Store deleted successfully");
+  } catch (error) {
+    return sendError(res, error.message, error.statusCode || 500);
+  }
+};
+
 module.exports = {
   createStore,
   getMyStore,
   updateStore,
   getApprovedStores,
+  deleteStore,
 };
+

@@ -23,5 +23,12 @@ router.put(
   storeController.updateStore,
 );
 router.get("/", storeController.getApprovedStores);
+router.delete(
+  "/:id",
+  protect,
+  roleCheck(["store_owner"]),
+  storeController.deleteStore,
+);
 
 module.exports = router;
+
