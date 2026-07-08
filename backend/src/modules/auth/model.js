@@ -18,8 +18,14 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "customer", "store_owner"],
+      enum: ["admin", "customer", "store_owner", "courier"],
       default: "customer",
+    },
+    resetPasswordCode: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
     },
     status: {
       type: String,

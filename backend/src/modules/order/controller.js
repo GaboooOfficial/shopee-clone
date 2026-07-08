@@ -30,18 +30,28 @@ const getStoreOrders = async (req, res) => {
 
 const updateOrderStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, notes } = req.body;
     if (!status) {
       return sendError(res, "Status is required", 400);
     }
     const order = await orderService.updateOrderStatus(
-      req.user._id,
+      req.user,
       req.params.id,
       status,
+      notes,
     );
     return sendSuccess(res, order, "Order status updated successfully");
   } catch (error) {
     return sendError(res, error.message, error.statusCode || 500);
+  }
+};
+
+const getCourierOrders = async (req, res) => {
+  try {
+    const orders = await orderService.getCourierOrders();
+    return sendSuccess(res, orders, "Courier pending orders fetched successfully");
+  } catch (error) {
+    return sendError(res, error.message, 500);
   }
 };
 
@@ -73,6 +83,7 @@ module.exports = {
   getCustomerOrders,
   getStoreOrders,
   updateOrderStatus,
+  getCourierOrders,
   cancelOrder,
   updateShippingAddress,
 };

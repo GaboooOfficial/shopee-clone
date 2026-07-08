@@ -57,10 +57,38 @@ const deactivateAccount = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return sendError(res, "Email is required", 400);
+    }
+    const result = await authService.forgotPassword(email);
+    return sendSuccess(res, result, "Password reset code generated successfully");
+  } catch (error) {
+    return sendError(res, error.message, error.statusCode || 500);
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+    if (!email || !code || !newPassword) {
+      return sendError(res, "Email, code, and newPassword are required", 400);
+    }
+    const result = await authService.resetPassword(email, code, newPassword);
+    return sendSuccess(res, result, "Password reset successfully");
+  } catch (error) {
+    return sendError(res, error.message, error.statusCode || 500);
+  }
+};
+
 module.exports = {
   register,
   login,
   getMe,
   updateProfile,
   deactivateAccount,
+  forgotPassword,
+  resetPassword,
 };

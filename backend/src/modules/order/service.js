@@ -49,6 +49,13 @@ const placeOrder = async (customerId, orderData) => {
     totalAmount,
     shippingAddress,
     status: "pending",
+    trackingHistory: [
+      {
+        status: "pending",
+        updatedBy: "customer",
+        notes: "Order placed successfully. Awaiting store confirmation.",
+      },
+    ],
   });
 
   return order;
@@ -75,18 +82,29 @@ const getStoreOrders = async (ownerId) => {
   return orders;
 };
 
-const updateOrderStatus = async (ownerId, orderId, status) => {
-  const store = await Store.findOne({ ownerId });
-  if (!store) {
-    const error = new Error("Store not found");
-    error.statusCode = 404;
+const updateOrderStatus = async (user, orderId, status, notes = "") => {
+  let order;
+
+  if (user.role === "store_owner") {
+    const store = await Store.findOne({ ownerId: user._id });
+    if (!store) {
+      const error = new Error("Store not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    order = await Order.findOne({
+      _id: orderId,
+      "items.storeId": store._id,
+    });
+  } else if (user.role === "courier") {
+    order = await Order.findById(orderId);
+  } else {
+    const error = new Error("Unauthorized role");
+    error.statusCode = 403;
     throw error;
   }
 
-  const order = await Order.findOne({
-    _id: orderId,
-    "items.storeId": store._id,
-  });
   if (!order) {
     const error = new Error("Order not found or unauthorized");
     error.statusCode = 404;
@@ -94,6 +112,17 @@ const updateOrderStatus = async (ownerId, orderId, status) => {
   }
 
   order.status = status;
+
+  if (!order.trackingHistory) {
+    order.trackingHistory = [];
+  }
+
+  order.trackingHistory.push({
+    status,
+    updatedBy: user.role,
+    notes: notes || `Order status updated to ${status}.`,
+  });
+
   await order.save();
   return order;
 };
@@ -124,6 +153,15 @@ const cancelOrder = async (customerId, orderId) => {
   }
 
   order.status = "cancelled";
+  if (!order.trackingHistory) {
+    order.trackingHistory = [];
+  }
+  order.trackingHistory.push({
+    status: "cancelled",
+    updatedBy: "customer",
+    notes: "Order cancelled by customer. Refund/restock processed.",
+  });
+
   await order.save();
   return order;
 };
@@ -155,6 +193,15 @@ const updateShippingAddress = async (customerId, orderId, address) => {
   return order;
 };
 
+const getCourierOrders = async () => {
+  return await Order.find({
+    status: { $in: ["processing", "shipped", "intransit", "unsuccessful"] },
+  })
+    .populate("customerId", "email profile")
+    .populate("items.productId", "name imageUrl")
+    .populate("items.storeId", "name");
+};
+
 module.exports = {
   placeOrder,
   getCustomerOrders,
@@ -162,4 +209,5 @@ module.exports = {
   updateOrderStatus,
   cancelOrder,
   updateShippingAddress,
+  getCourierOrders,
 };

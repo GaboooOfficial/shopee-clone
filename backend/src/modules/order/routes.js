@@ -17,10 +17,16 @@ router.get(
   roleCheck(["store_owner"]),
   orderController.getStoreOrders,
 );
+router.get(
+  "/courier/pending",
+  protect,
+  roleCheck(["courier"]),
+  orderController.getCourierOrders,
+);
 router.patch(
   "/:id/status",
   protect,
-  roleCheck(["store_owner"]),
+  roleCheck(["store_owner", "courier"]),
   orderController.updateOrderStatus,
 );
 router.patch(
