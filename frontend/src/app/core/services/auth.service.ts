@@ -81,8 +81,16 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/forgot-password`, { email });
   }
 
-  resetPassword(email: string, code: string, newPassword: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/reset-password`, { email, code, newPassword });
+  resetPassword(
+    email: string,
+    code: string,
+    newPassword: any,
+  ): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/reset-password`, {
+      email,
+      code,
+      newPassword,
+    });
   }
 
   hasRole(roles: string[]): boolean {

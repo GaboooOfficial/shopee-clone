@@ -5,15 +5,13 @@ export const selectCartState = createFeatureSelector<CartState>('cart');
 
 export const selectCartItems = createSelector(
   selectCartState,
-  (state: CartState) => state.items
+  (state: CartState) => state.items,
 );
 
-export const selectCartItemsCount = createSelector(
-  selectCartItems,
-  (items) => items.reduce((sum, item) => sum + item.quantity, 0)
+export const selectCartItemsCount = createSelector(selectCartItems, (items) =>
+  items.reduce((sum, item) => sum + item.quantity, 0),
 );
 
-export const selectCartTotal = createSelector(
-  selectCartItems,
-  (items) => items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+export const selectCartTotal = createSelector(selectCartItems, (items) =>
+  items.reduce((sum, item) => sum + item.price * item.quantity, 0),
 );

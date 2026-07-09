@@ -15,24 +15,33 @@ export class ProductsEffects {
       ofType(ProductsActions.loadProducts),
       mergeMap((action) => {
         let url = `${this.baseUrl}/products?`;
-        if (action.search) url += `search=${encodeURIComponent(action.search)}&`;
+        if (action.search)
+          url += `search=${encodeURIComponent(action.search)}&`;
         if (action.categoryId) url += `categoryId=${action.categoryId}&`;
         if (action.storeId) url += `storeId=${action.storeId}&`;
 
         return this.http.get<any>(url).pipe(
           map((res) => {
             if (res.success) {
-              return ProductsActions.loadProductsSuccess({ products: res.data });
+              return ProductsActions.loadProductsSuccess({
+                products: res.data,
+              });
             } else {
-              return ProductsActions.loadProductsFailure({ error: res.message || 'Failed to load products' });
+              return ProductsActions.loadProductsFailure({
+                error: res.message || 'Failed to load products',
+              });
             }
           }),
           catchError((err) =>
-            of(ProductsActions.loadProductsFailure({ error: err.error?.message || 'Failed to load products' }))
-          )
+            of(
+              ProductsActions.loadProductsFailure({
+                error: err.error?.message || 'Failed to load products',
+              }),
+            ),
+          ),
         );
-      })
-    )
+      }),
+    ),
   );
 
   loadMyStoreProducts$ = createEffect(() =>
@@ -46,22 +55,30 @@ export class ProductsEffects {
           .pipe(
             map((res) => {
               if (res.success) {
-                return ProductsActions.loadMyStoreProductsSuccess({ products: res.data });
+                return ProductsActions.loadMyStoreProductsSuccess({
+                  products: res.data,
+                });
               } else {
-                return ProductsActions.loadMyStoreProductsFailure({ error: res.message || 'Failed to load store products' });
+                return ProductsActions.loadMyStoreProductsFailure({
+                  error: res.message || 'Failed to load store products',
+                });
               }
             }),
             catchError((err) =>
-              of(ProductsActions.loadMyStoreProductsFailure({ error: err.error?.message || 'Failed to load store products' }))
-            )
+              of(
+                ProductsActions.loadMyStoreProductsFailure({
+                  error: err.error?.message || 'Failed to load store products',
+                }),
+              ),
+            ),
           );
-      })
-    )
+      }),
+    ),
   );
 
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 }

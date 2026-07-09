@@ -95,7 +95,23 @@
               >
                 👁️
               </button>
-              <button type="button" (click)="showForgotForm = true; errorMessage = ''; successMessage = '';" class="forgot-link" style="background: none; border: none; font-size: 12.5px; color: #0055aa; cursor: pointer; padding: 0;">Forgot?</button>
+              <button
+                type="button"
+                (click)="
+                  showForgotForm = true; errorMessage = ''; successMessage = ''
+                "
+                class="forgot-link"
+                style="
+                  background: none;
+                  border: none;
+                  font-size: 12.5px;
+                  color: #0055aa;
+                  cursor: pointer;
+                  padding: 0;
+                "
+              >
+                Forgot?
+              </button>
             </div>
 
             <div class="stay-signed-in-wrapper">
@@ -278,13 +294,23 @@
 
         <!-- Forgot Password Form View -->
         <div *ngIf="showForgotForm" class="form-view-container">
-          <div class="form-header-row" style="margin-bottom: 20px;">
-            <h3 class="card-title" style="margin: 0; font-size: 20px; font-weight: 500;">Reset Password</h3>
+          <div class="form-header-row" style="margin-bottom: 20px">
+            <h3
+              class="card-title"
+              style="margin: 0; font-size: 20px; font-weight: 500"
+            >
+              Reset Password
+            </h3>
           </div>
-          
+
           <!-- Request Code Form -->
-          <form *ngIf="!resetCodeSent" (ngSubmit)="onRequestResetCode()" #forgotForm="ngForm" class="shopee-form">
-            <div class="input-wrapper" style="margin-bottom: 20px;">
+          <form
+            *ngIf="!resetCodeSent"
+            (ngSubmit)="onRequestResetCode()"
+            #forgotForm="ngForm"
+            class="shopee-form"
+          >
+            <div class="input-wrapper" style="margin-bottom: 20px">
               <input
                 type="email"
                 name="forgotEmail"
@@ -292,26 +318,60 @@
                 placeholder="Enter your Email Address"
                 [(ngModel)]="forgotEmail"
                 required
-                style="width: 100%; height: 40px; padding: 10px; border: 1px solid #dbdbdb; border-radius: 2px; box-sizing: border-box;"
+                style="
+                  width: 100%;
+                  height: 40px;
+                  padding: 10px;
+                  border: 1px solid #dbdbdb;
+                  border-radius: 2px;
+                  box-sizing: border-box;
+                "
               />
             </div>
             <button
               type="submit"
               [disabled]="forgotForm.invalid || isLoading"
               class="btn-shopee-submit"
-              style="width: 100%; height: 40px; background-color: #ee4d2d; color: #fff; border: none; border-radius: 2px; font-weight: 500; cursor: pointer;"
+              style="
+                width: 100%;
+                height: 40px;
+                background-color: #ee4d2d;
+                color: #fff;
+                border: none;
+                border-radius: 2px;
+                font-weight: 500;
+                cursor: pointer;
+              "
             >
               {{ isLoading ? "SENDING CODE..." : "REQUEST RESET CODE" }}
             </button>
           </form>
 
           <!-- Input Code & New Password Form -->
-          <form *ngIf="resetCodeSent" (ngSubmit)="onResetPassword()" #resetForm="ngForm" class="shopee-form">
-            <div class="alert alert-info" style="font-size: 13px; padding: 10px 14px; background-color: #e6f7ff; border: 1px solid #91d5ff; color: #1890ff; margin-bottom: 15px; border-radius: 2px;">
-              We have sent a 6-digit verification code to your email inbox. Please check your spam/junk folder if you don't see it within a minute.
+          <form
+            *ngIf="resetCodeSent"
+            (ngSubmit)="onResetPassword()"
+            #resetForm="ngForm"
+            class="shopee-form"
+          >
+            <div
+              class="alert alert-info"
+              style="
+                font-size: 13px;
+                padding: 10px 14px;
+                background-color: #e6f7ff;
+                border: 1px solid #91d5ff;
+                color: #1890ff;
+                margin-bottom: 15px;
+                border-radius: 2px;
+              "
+            >
+              We have sent a 6-digit verification code to your email inbox.
+              Please check your spam/junk folder if you don't see it within a
+              minute.
             </div>
-            
-            <div class="input-wrapper" style="margin-bottom: 15px;">
+
+            <div class="input-wrapper" style="margin-bottom: 15px">
               <input
                 type="text"
                 name="resetCode"
@@ -319,11 +379,18 @@
                 placeholder="6-digit verification code"
                 [(ngModel)]="resetCode"
                 required
-                style="width: 100%; height: 40px; padding: 10px; border: 1px solid #dbdbdb; border-radius: 2px; box-sizing: border-box;"
+                style="
+                  width: 100%;
+                  height: 40px;
+                  padding: 10px;
+                  border: 1px solid #dbdbdb;
+                  border-radius: 2px;
+                  box-sizing: border-box;
+                "
               />
             </div>
 
-            <div class="input-wrapper" style="margin-bottom: 20px;">
+            <div class="input-wrapper" style="margin-bottom: 20px">
               <input
                 type="password"
                 name="newPassword"
@@ -332,7 +399,14 @@
                 [(ngModel)]="newPassword"
                 required
                 minlength="6"
-                style="width: 100%; height: 40px; padding: 10px; border: 1px solid #dbdbdb; border-radius: 2px; box-sizing: border-box;"
+                style="
+                  width: 100%;
+                  height: 40px;
+                  padding: 10px;
+                  border: 1px solid #dbdbdb;
+                  border-radius: 2px;
+                  box-sizing: border-box;
+                "
               />
             </div>
 
@@ -340,14 +414,52 @@
               type="submit"
               [disabled]="resetForm.invalid || isLoading"
               class="btn-shopee-submit"
-              style="width: 100%; height: 40px; background-color: #ee4d2d; color: #fff; border: none; border-radius: 2px; font-weight: 500; cursor: pointer;"
+              style="
+                width: 100%;
+                height: 40px;
+                background-color: #ee4d2d;
+                color: #fff;
+                border: none;
+                border-radius: 2px;
+                font-weight: 500;
+                cursor: pointer;
+              "
             >
               {{ isLoading ? "RESETTING PASSWORD..." : "CONFIRM NEW PASSWORD" }}
             </button>
           </form>
 
-          <div class="signup-redirect" style="margin-top: 30px; text-align: center; font-size: 14px; color: rgba(0,0,0,0.26);">
-            Back to <button type="button" class="btn-link-action" (click)="showForgotForm = false; isLoginTab = true; resetCodeSent = false; errorMessage = ''; successMessage = '';" style="background: none; border: none; color: #ee4d2d; font-weight: 500; cursor: pointer; padding: 0;">Log In</button>
+          <div
+            class="signup-redirect"
+            style="
+              margin-top: 30px;
+              text-align: center;
+              font-size: 14px;
+              color: rgba(0, 0, 0, 0.26);
+            "
+          >
+            Back to
+            <button
+              type="button"
+              class="btn-link-action"
+              (click)="
+                showForgotForm = false;
+                isLoginTab = true;
+                resetCodeSent = false;
+                errorMessage = '';
+                successMessage = ''
+              "
+              style="
+                background: none;
+                border: none;
+                color: #ee4d2d;
+                font-weight: 500;
+                cursor: pointer;
+                padding: 0;
+              "
+            >
+              Log In
+            </button>
           </div>
         </div>
       </div>

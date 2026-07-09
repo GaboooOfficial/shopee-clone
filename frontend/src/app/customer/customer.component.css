@@ -1073,7 +1073,7 @@
 }
 
 .tracking-timeline::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 5px;
   top: 10px;
@@ -1137,4 +1137,3 @@
     margin-top: 20px;
   }
 }
-

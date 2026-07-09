@@ -75,8 +75,9 @@ export class AuthComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Failed to request reset code';
-      }
+        this.errorMessage =
+          err.error?.message || 'Failed to request reset code';
+      },
     });
   }
 
@@ -86,26 +87,29 @@ export class AuthComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.authService.resetPassword(this.forgotEmail, this.resetCode, this.newPassword).subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        if (res.success) {
-          this.successMessage = 'Password reset successfully! You can now log in.';
-          this.showForgotForm = false;
-          this.isLoginTab = true;
-          this.resetCodeSent = false;
-          this.forgotEmail = '';
-          this.resetCode = '';
-          this.newPassword = '';
-        } else {
-          this.errorMessage = res.message || 'Failed to reset password';
-        }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Failed to reset password';
-      }
-    });
+    this.authService
+      .resetPassword(this.forgotEmail, this.resetCode, this.newPassword)
+      .subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          if (res.success) {
+            this.successMessage =
+              'Password reset successfully! You can now log in.';
+            this.showForgotForm = false;
+            this.isLoginTab = true;
+            this.resetCodeSent = false;
+            this.forgotEmail = '';
+            this.resetCode = '';
+            this.newPassword = '';
+          } else {
+            this.errorMessage = res.message || 'Failed to reset password';
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.error?.message || 'Failed to reset password';
+        },
+      });
   }
 
   onLogin() {

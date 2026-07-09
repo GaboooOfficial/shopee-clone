@@ -21,17 +21,25 @@ export class OrdersEffects {
           .pipe(
             map((res) => {
               if (res.success) {
-                return OrdersActions.loadCustomerOrdersSuccess({ orders: res.data });
+                return OrdersActions.loadCustomerOrdersSuccess({
+                  orders: res.data,
+                });
               } else {
-                return OrdersActions.loadCustomerOrdersFailure({ error: res.message || 'Failed to load customer orders' });
+                return OrdersActions.loadCustomerOrdersFailure({
+                  error: res.message || 'Failed to load customer orders',
+                });
               }
             }),
             catchError((err) =>
-              of(OrdersActions.loadCustomerOrdersFailure({ error: err.error?.message || 'Failed to load customer orders' }))
-            )
-          )
-      )
-    )
+              of(
+                OrdersActions.loadCustomerOrdersFailure({
+                  error: err.error?.message || 'Failed to load customer orders',
+                }),
+              ),
+            ),
+          ),
+      ),
+    ),
   );
 
   loadStoreOrders$ = createEffect(() =>
@@ -45,17 +53,25 @@ export class OrdersEffects {
           .pipe(
             map((res) => {
               if (res.success) {
-                return OrdersActions.loadStoreOrdersSuccess({ orders: res.data });
+                return OrdersActions.loadStoreOrdersSuccess({
+                  orders: res.data,
+                });
               } else {
-                return OrdersActions.loadStoreOrdersFailure({ error: res.message || 'Failed to load store orders' });
+                return OrdersActions.loadStoreOrdersFailure({
+                  error: res.message || 'Failed to load store orders',
+                });
               }
             }),
             catchError((err) =>
-              of(OrdersActions.loadStoreOrdersFailure({ error: err.error?.message || 'Failed to load store orders' }))
-            )
-          )
-      )
-    )
+              of(
+                OrdersActions.loadStoreOrdersFailure({
+                  error: err.error?.message || 'Failed to load store orders',
+                }),
+              ),
+            ),
+          ),
+      ),
+    ),
   );
 
   loadCourierDeliveries$ = createEffect(() =>
@@ -69,22 +85,30 @@ export class OrdersEffects {
           .pipe(
             map((res) => {
               if (res.success) {
-                return OrdersActions.loadCourierDeliveriesSuccess({ deliveries: res.data });
+                return OrdersActions.loadCourierDeliveriesSuccess({
+                  deliveries: res.data,
+                });
               } else {
-                return OrdersActions.loadCourierDeliveriesFailure({ error: res.message || 'Failed to load deliveries' });
+                return OrdersActions.loadCourierDeliveriesFailure({
+                  error: res.message || 'Failed to load deliveries',
+                });
               }
             }),
             catchError((err) =>
-              of(OrdersActions.loadCourierDeliveriesFailure({ error: err.error?.message || 'Failed to load deliveries' }))
-            )
-          )
-      )
-    )
+              of(
+                OrdersActions.loadCourierDeliveriesFailure({
+                  error: err.error?.message || 'Failed to load deliveries',
+                }),
+              ),
+            ),
+          ),
+      ),
+    ),
   );
 
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 }

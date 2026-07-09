@@ -4,18 +4,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AdminComponent } from './admin.component';
 
-const routes: Routes = [
-  { path: '', component: AdminComponent }
-];
+const routes: Routes = [{ path: '', component: AdminComponent }];
 
 @NgModule({
-  declarations: [
-    AdminComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule.forChild(routes)
-  ]
+  declarations: [AdminComponent],
+  imports: [CommonModule, FormsModule, RouterModule.forChild(routes)],
 })
-export class AdminModule { }
+export class AdminModule {}

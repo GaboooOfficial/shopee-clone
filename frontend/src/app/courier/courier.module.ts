@@ -4,18 +4,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CourierComponent } from './courier.component';
 
-const routes: Routes = [
-  { path: '', component: CourierComponent }
-];
+const routes: Routes = [{ path: '', component: CourierComponent }];
 
 @NgModule({
-  declarations: [
-    CourierComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule.forChild(routes)
-  ]
+  declarations: [CourierComponent],
+  imports: [CommonModule, FormsModule, RouterModule.forChild(routes)],
 })
-export class CourierModule { }
+export class CourierModule {}

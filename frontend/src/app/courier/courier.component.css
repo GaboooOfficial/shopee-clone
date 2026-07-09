@@ -115,7 +115,9 @@
   font-size: 14.5px;
   color: #555;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .menu-item:hover {
@@ -236,10 +238,18 @@
   font-size: 28px;
 }
 
-.border-left-primary { border-left: 4px solid #ee4d2d; }
-.border-left-info { border-left: 4px solid #0055aa; }
-.border-left-success { border-left: 4px solid #26a99e; }
-.border-left-danger { border-left: 4px solid #ff424e; }
+.border-left-primary {
+  border-left: 4px solid #ee4d2d;
+}
+.border-left-info {
+  border-left: 4px solid #0055aa;
+}
+.border-left-success {
+  border-left: 4px solid #26a99e;
+}
+.border-left-danger {
+  border-left: 4px solid #ff424e;
+}
 
 /* Tables */
 .table-container {
@@ -321,8 +331,14 @@
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .drawer-form .form-group {

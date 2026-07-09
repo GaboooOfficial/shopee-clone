@@ -8,7 +8,7 @@ export interface CartState {
 export const initialCartState: CartState = {
   items: localStorage.getItem('shopee_cart')
     ? JSON.parse(localStorage.getItem('shopee_cart')!)
-    : []
+    : [],
 };
 
 function saveCart(items: any[]) {
@@ -21,19 +21,19 @@ export const cartReducer = createReducer(
     const saved = localStorage.getItem('shopee_cart');
     return {
       ...state,
-      items: saved ? JSON.parse(saved) : []
+      items: saved ? JSON.parse(saved) : [],
     };
   }),
   on(CartActions.addToCart, (state, { product }) => {
     const existingIndex = state.items.findIndex(
-      (item) => item.productId === product._id
+      (item) => item.productId === product._id,
     );
     let updatedItems = [...state.items];
     if (existingIndex > -1) {
       if (updatedItems[existingIndex].quantity < product.stock) {
         updatedItems[existingIndex] = {
           ...updatedItems[existingIndex],
-          quantity: updatedItems[existingIndex].quantity + 1
+          quantity: updatedItems[existingIndex].quantity + 1,
         };
       }
     } else {
@@ -50,7 +50,7 @@ export const cartReducer = createReducer(
     saveCart(updatedItems);
     return {
       ...state,
-      items: updatedItems
+      items: updatedItems,
     };
   }),
   on(CartActions.removeFromCart, (state, { index }) => {
@@ -58,7 +58,7 @@ export const cartReducer = createReducer(
     saveCart(updatedItems);
     return {
       ...state,
-      items: updatedItems
+      items: updatedItems,
     };
   }),
   on(CartActions.updateCartQuantity, (state, { index, quantity }) => {
@@ -74,14 +74,14 @@ export const cartReducer = createReducer(
     saveCart(updatedItems);
     return {
       ...state,
-      items: updatedItems
+      items: updatedItems,
     };
   }),
   on(CartActions.clearCart, (state) => {
     saveCart([]);
     return {
       ...state,
-      items: []
+      items: [],
     };
-  })
+  }),
 );

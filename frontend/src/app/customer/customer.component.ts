@@ -58,7 +58,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
     productId: '',
     orderId: '',
     rating: 5,
-    reviewText: ''
+    reviewText: '',
   };
 
   // Product reviews drawer
@@ -85,9 +85,15 @@ export class CustomerComponent implements OnInit, OnDestroy {
       };
       this.initWebSocket();
     }
-    this.store.select(selectCartItems).subscribe(items => this.cart = items);
-    this.store.select(selectProducts).subscribe(products => this.products = products);
-    this.store.select(selectCustomerOrders).subscribe(orders => this.orders = orders);
+    this.store
+      .select(selectCartItems)
+      .subscribe((items) => (this.cart = items));
+    this.store
+      .select(selectProducts)
+      .subscribe((products) => (this.products = products));
+    this.store
+      .select(selectCustomerOrders)
+      .subscribe((orders) => (this.orders = orders));
 
     this.loadCategories();
     this.loadStores();
@@ -135,7 +141,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
         search: this.filters.search,
         categoryId: this.filters.categoryId,
         storeId: this.filters.storeId,
-      })
+      }),
     );
   }
 
@@ -159,7 +165,9 @@ export class CustomerComponent implements OnInit, OnDestroy {
   }
 
   onCartQuantityChanged(index: number, newQty: number) {
-    this.store.dispatch(CartActions.updateCartQuantity({ index, quantity: newQty }));
+    this.store.dispatch(
+      CartActions.updateCartQuantity({ index, quantity: newQty }),
+    );
   }
 
   removeFromCart(index: number) {
@@ -512,7 +520,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
       productId,
       orderId,
       rating: 5,
-      reviewText: ''
+      reviewText: '',
     };
     this.reviewModalOpen = true;
   }
@@ -522,38 +530,51 @@ export class CustomerComponent implements OnInit, OnDestroy {
   }
 
   submitReview() {
-    if (!this.reviewForm.productId || !this.reviewForm.orderId || !this.reviewForm.reviewText.trim()) return;
+    if (
+      !this.reviewForm.productId ||
+      !this.reviewForm.orderId ||
+      !this.reviewForm.reviewText.trim()
+    )
+      return;
 
-    this.http.post<any>(`${this.baseUrl}/reviews`, this.reviewForm, { headers: this.authService.getAuthHeaders() }).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.successMessage = 'Review submitted successfully! Thank you for your feedback.';
-          this.closeReviewModal();
-          this.loadPurchaseHistory();
+    this.http
+      .post<any>(`${this.baseUrl}/reviews`, this.reviewForm, {
+        headers: this.authService.getAuthHeaders(),
+      })
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.successMessage =
+              'Review submitted successfully! Thank you for your feedback.';
+            this.closeReviewModal();
+            this.loadPurchaseHistory();
+            this.clearMessages();
+          }
+        },
+        error: (err) => {
+          this.errorMessage = err.error?.message || 'Failed to submit review';
           this.clearMessages();
-        }
-      },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Failed to submit review';
-        this.clearMessages();
-      }
-    });
+        },
+      });
   }
 
   viewProductReviews(product: any) {
     this.selectedProductForReviews = product;
     this.selectedProductReviews = [];
-    this.http.get<any>(`${this.baseUrl}/reviews/product/${product._id}`).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.selectedProductReviews = res.data;
-        }
-      },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Failed to load product reviews';
-        this.clearMessages();
-      }
-    });
+    this.http
+      .get<any>(`${this.baseUrl}/reviews/product/${product._id}`)
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.selectedProductReviews = res.data;
+          }
+        },
+        error: (err) => {
+          this.errorMessage =
+            err.error?.message || 'Failed to load product reviews';
+          this.clearMessages();
+        },
+      });
   }
 
   closeProductReviews() {

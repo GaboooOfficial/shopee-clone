@@ -5,19 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { StoreOwnerComponent } from './store-owner.component';
 import { SharedModule } from '../shared/shared.module';
 
-const routes: Routes = [
-  { path: '', component: StoreOwnerComponent }
-];
+const routes: Routes = [{ path: '', component: StoreOwnerComponent }];
 
 @NgModule({
-  declarations: [
-    StoreOwnerComponent
-  ],
+  declarations: [StoreOwnerComponent],
   imports: [
     CommonModule,
     FormsModule,
     SharedModule,
-    RouterModule.forChild(routes)
-  ]
+    RouterModule.forChild(routes),
+  ],
 })
-export class StoreOwnerModule { }
+export class StoreOwnerModule {}

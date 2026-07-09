@@ -5,19 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { CustomerComponent } from './customer.component';
 import { SharedModule } from '../shared/shared.module';
 
-const routes: Routes = [
-  { path: '', component: CustomerComponent }
-];
+const routes: Routes = [{ path: '', component: CustomerComponent }];
 
 @NgModule({
-  declarations: [
-    CustomerComponent
-  ],
+  declarations: [CustomerComponent],
   imports: [
     CommonModule,
     FormsModule,
     SharedModule,
-    RouterModule.forChild(routes)
-  ]
+    RouterModule.forChild(routes),
+  ],
 })
-export class CustomerModule { }
+export class CustomerModule {}

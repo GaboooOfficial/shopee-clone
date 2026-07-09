@@ -14,7 +14,7 @@ export const initialOrdersState: OrdersState = {
   storeOrders: [],
   courierDeliveries: [],
   loading: false,
-  error: null
+  error: null,
 };
 
 export const ordersReducer = createReducer(
@@ -22,49 +22,49 @@ export const ordersReducer = createReducer(
   on(OrdersActions.loadCustomerOrders, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
   })),
   on(OrdersActions.loadCustomerOrdersSuccess, (state, { orders }) => ({
     ...state,
     customerOrders: orders,
     loading: false,
-    error: null
+    error: null,
   })),
   on(OrdersActions.loadCustomerOrdersFailure, (state, { error }) => ({
     ...state,
     loading: false,
-    error
+    error,
   })),
   on(OrdersActions.loadStoreOrders, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
   })),
   on(OrdersActions.loadStoreOrdersSuccess, (state, { orders }) => ({
     ...state,
     storeOrders: orders,
     loading: false,
-    error: null
+    error: null,
   })),
   on(OrdersActions.loadStoreOrdersFailure, (state, { error }) => ({
     ...state,
     loading: false,
-    error
+    error,
   })),
   on(OrdersActions.loadCourierDeliveries, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
   })),
   on(OrdersActions.loadCourierDeliveriesSuccess, (state, { deliveries }) => ({
     ...state,
     courierDeliveries: deliveries,
     loading: false,
-    error: null
+    error: null,
   })),
   on(OrdersActions.loadCourierDeliveriesFailure, (state, { error }) => ({
     ...state,
     loading: false,
-    error
-  }))
+    error,
+  })),
 );

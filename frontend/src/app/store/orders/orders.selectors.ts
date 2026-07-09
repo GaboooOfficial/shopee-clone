@@ -5,25 +5,25 @@ export const selectOrdersState = createFeatureSelector<OrdersState>('orders');
 
 export const selectCustomerOrders = createSelector(
   selectOrdersState,
-  (state: OrdersState) => state.customerOrders
+  (state: OrdersState) => state.customerOrders,
 );
 
 export const selectStoreOrders = createSelector(
   selectOrdersState,
-  (state: OrdersState) => state.storeOrders
+  (state: OrdersState) => state.storeOrders,
 );
 
 export const selectCourierDeliveries = createSelector(
   selectOrdersState,
-  (state: OrdersState) => state.courierDeliveries
+  (state: OrdersState) => state.courierDeliveries,
 );
 
 export const selectOrdersLoading = createSelector(
   selectOrdersState,
-  (state: OrdersState) => state.loading
+  (state: OrdersState) => state.loading,
 );
 
 export const selectOrdersError = createSelector(
   selectOrdersState,
-  (state: OrdersState) => state.error
+  (state: OrdersState) => state.error,
 );
