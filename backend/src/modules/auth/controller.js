@@ -64,7 +64,11 @@ const forgotPassword = async (req, res) => {
       return sendError(res, "Email is required", 400);
     }
     const result = await authService.forgotPassword(email);
-    return sendSuccess(res, result, "Password reset code generated successfully");
+    return sendSuccess(
+      res,
+      result,
+      "Password reset code generated successfully",
+    );
   } catch (error) {
     return sendError(res, error.message, error.statusCode || 500);
   }

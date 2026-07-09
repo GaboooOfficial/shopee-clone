@@ -49,7 +49,11 @@ const updateOrderStatus = async (req, res) => {
 const getCourierOrders = async (req, res) => {
   try {
     const orders = await orderService.getCourierOrders();
-    return sendSuccess(res, orders, "Courier pending orders fetched successfully");
+    return sendSuccess(
+      res,
+      orders,
+      "Courier pending orders fetched successfully",
+    );
   } catch (error) {
     return sendError(res, error.message, 500);
   }

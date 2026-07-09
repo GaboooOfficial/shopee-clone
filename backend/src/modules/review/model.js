@@ -31,11 +31,14 @@ const reviewSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Unique review per user per product in a specific order
-reviewSchema.index({ orderId: 1, productId: 1, customerId: 1 }, { unique: true });
+reviewSchema.index(
+  { orderId: 1, productId: 1, customerId: 1 },
+  { unique: true },
+);
 
 const Review = mongoose.model("Review", reviewSchema);
 

@@ -22,5 +22,5 @@ const getProductReviews = async (req, res) => {
 
 module.exports = {
   createReview,
-  getProductReviews
+  getProductReviews,
 };

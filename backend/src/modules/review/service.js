@@ -21,7 +21,7 @@ const createReview = async (customerId, reviewData) => {
   const order = await Order.findOne({
     _id: orderId,
     customerId,
-    status: { $in: ["delivered", "package delivered"] }
+    status: { $in: ["delivered", "package delivered"] },
   });
 
   if (!order) {
@@ -31,7 +31,9 @@ const createReview = async (customerId, reviewData) => {
   }
 
   // Verify product is in order
-  const itemInOrder = order.items.find(item => item.productId.toString() === productId.toString());
+  const itemInOrder = order.items.find(
+    (item) => item.productId.toString() === productId.toString(),
+  );
   if (!itemInOrder) {
     const error = new Error("This product is not part of the specified order");
     error.statusCode = 400;
@@ -44,7 +46,7 @@ const createReview = async (customerId, reviewData) => {
     productId,
     customerId,
     rating,
-    reviewText
+    reviewText,
   });
 
   return review;
@@ -58,5 +60,5 @@ const getProductReviews = async (productId) => {
 
 module.exports = {
   createReview,
-  getProductReviews
+  getProductReviews,
 };
