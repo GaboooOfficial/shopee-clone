@@ -16,7 +16,7 @@ const connectDB = async () => {
       `✅ Connected to MongoDB Atlas via Mongoose: ${conn.connection.host}`,
     );
 
-    // Auto-seed default admin if none exists
+    // seed default admin
     const User = require("../modules/auth/model");
     const adminExists = await User.findOne({ role: "admin" });
     if (!adminExists) {
@@ -32,7 +32,6 @@ const connectDB = async () => {
       console.log("👤 Seeded default admin user: admin@shopee.com / admin123");
     }
 
-    // Auto-seed categories if none exist
     const Category = require("../modules/category/model");
     const categoriesToSeed = [
       "Men's Apparel",
